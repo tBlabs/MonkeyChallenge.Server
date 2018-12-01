@@ -12,7 +12,8 @@ socket.on('disconnect', () =>
 
 socket.on('state', (state) =>
 {
-    document.querySelector('#data').textContent = JSON.stringify(state);
+    // document.querySelector('#data').textContent = JSON.stringify(state);
+    console.log('state:', state);
 
     const monkeyPic = state ? 'hanging-monkey.png' : 'siting-monkey.png';
     document.querySelector('#pic').setAttribute('src', monkeyPic);
