@@ -6,12 +6,15 @@ import * as socketIo from 'socket.io';
 import * as path from 'path';
 import { IStartupArgs } from './Services/Environment/IStartupArgs';
 import { Repeater } from './Services/Repeater/Repeater';
+import { IEnvironment } from './Services/Environment/IEnvironment';
+import { IRunMode } from './Services/RunMode/IRunMode';
 
 @injectable()
 export class Main
 {
     constructor(
-        @inject(Types.IStartupArgs) private _args: IStartupArgs)
+        @inject(Types.IStartupArgs) private _args: IStartupArgs,
+        @inject(Types.IRunMode) private _runMode: IRunMode)
     { }
 
     private get ClientDir(): string
@@ -24,7 +27,7 @@ export class Main
     {
         const server = express();
         const httpServer = http.createServer(server);
-        const socket = socketIo(httpServer);
+        const socketHost = socketIo(httpServer);
 
         server.get('/favicon.ico', (req, res) => res.status(204));
 
@@ -32,17 +35,20 @@ export class Main
 
         server.use(express.static(this.ClientDir));
 
-        socket.on('connection', (socket: socketIo.Socket) =>
+
+
+        socketHost.on('connection', (socket) =>
         {
             console.log('CLIENT CONNECTED', socket.id);
 
-            Repeater.EverySecond((counter) =>
+            socket.on('laser', (state) =>
             {
-                socket.emit('data', { foo: counter });
+                console.log(state);
+                socketHost.emit('state', state);
             });
         });
 
-        const port = 4000;
+        const port = this._runMode.IsDev ? 4000 : process.env.PORT;
         httpServer.listen(port, () => console.log('SERVER STARTED @ ' + port));
 
         process.on('SIGINT', () =>
