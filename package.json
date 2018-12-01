@@ -1,5 +1,5 @@
 {
-    "name": "express.ts",
+    "name": "monkey-challenge-server",
     "version": "1.0.0",
     "description": "node with express boilerplate",
     "main": "./bin/startup.js",
