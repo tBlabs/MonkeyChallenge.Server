@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io('/web');
 
 socket.on('connect', () =>
 {
@@ -17,4 +17,9 @@ socket.on('state', (state) =>
 
     const monkeyPic = state ? 'hanging-monkey.png' : 'siting-monkey.png';
     document.querySelector('#pic').setAttribute('src', monkeyPic);
+});
+
+socket.on('monkey-update', monkeyUpdate =>
+{
+    console.log('monkey-update', monkeyUpdate);
 });

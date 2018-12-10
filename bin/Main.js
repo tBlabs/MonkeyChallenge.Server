@@ -18,6 +18,48 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const path = require("path");
+// @injectable()
+// export class WebClients
+// {
+//     private collection: Socket[] = [];
+//     public Add(socket: Socket)
+//     {
+//         this.collection.push(socket);
+//     }
+//     public get List()
+//     {
+//         return this.collection;
+//     }
+//     public SendMonkeyUpdate()
+//     {
+//     }
+// }
+// export class Monkey
+// {
+//     constructor(
+//         public socket: Socket,
+//         public id: string)
+//     { 
+//     }
+// }
+// @injectable()
+// export class ProxyClients
+// {
+//     private collection: Monkey[] = [];
+//     constructor(private _webClients: WebClients)
+//     { }
+//     public Add(monkey: Monkey)
+//     {
+//         this.collection.push(monkey);
+//         monkey.socket.on('laser-sensor-state-change', (state) =>
+//         {
+//             this._webClients.List.forEach((webClient) =>
+//             {
+//                 webClient.SendMonkeyUpdate(monkey);
+//             });
+//         });
+//     }
+// }
 let Main = class Main {
     constructor(_args, _runMode) {
         this._args = _args;
@@ -31,16 +73,44 @@ let Main = class Main {
         const server = express();
         const httpServer = http.createServer(server);
         const socketHost = socketIo(httpServer);
+        const webSocketHost = socketHost.of('/web');
+        const monkeySocketHost = socketHost.of('/monkey');
+        webSocketHost.on('connection', (socket) => {
+            console.log('web', socket.id);
+        });
+        monkeySocketHost.on('connection', (socket) => {
+            const monkeyId = socket.handshake.query.id;
+            console.log('monkey', socket.id, monkeyId);
+            socket.on('monkey-update', update => {
+                //  console.log(update);
+                webSocketHost.emit('monkey-update', update);
+            });
+        });
+        let guard = 0;
+        let state = 0;
+        setInterval(() => {
+            state = 1 - state;
+            webSocketHost.emit('monkey-update', { id: "GhostMonkey", state: state, timestamp: +new Date(), guard: guard++ });
+        }, 1000);
         server.get('/favicon.ico', (req, res) => res.status(204));
         server.get('/ping', (req, res) => res.send('pong'));
         server.use(express.static(this.ClientDir));
-        socketHost.on('connection', (socket) => {
-            console.log('CLIENT CONNECTED', socket.id);
-            socket.on('laser', (state) => {
-                console.log(state);
-                socketHost.emit('state', state);
-            });
-        });
+        // socketHost.on('connection', (webOrProxySocket) =>
+        // {
+        //     const clientType = webOrProxySocket.handshake.query.clientType;
+        //     switch (clientType)
+        //     {
+        //         default:
+        //             console.log('WEB (OR UNKNOWN) CLIENT CONNECTED', webOrProxySocket.id);
+        //             // this._webClients.Add(webOrProxySocket);
+        //             break;
+        //         case "monkey-proxy":
+        //             console.log('MONKEY-PROXY CONNECTED', webOrProxySocket.id);
+        //             const monkeyId = webOrProxySocket.handshake.query.monkeyId;
+        //             // this._proxyClients.Add(new Monkey(webOrProxySocket, monkeyId));
+        //             break;
+        //     }
+        // });
         const port = this._runMode.IsDev ? 4000 : process.env.PORT;
         httpServer.listen(port, () => console.log('SERVER STARTED @ ' + port));
         process.on('SIGINT', () => {
