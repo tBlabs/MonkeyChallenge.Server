@@ -10,16 +10,15 @@ socket.on('disconnect', () =>
     console.log('Disconnected from server');
 });
 
-socket.on('state', (state) =>
-{
-    // document.querySelector('#data').textContent = JSON.stringify(state);
-    console.log('state:', state);
+// socket.on('state', (state) =>
+// {
+//     const monkeyPic = state ? 'hanging-monkey.png' : 'siting-monkey.png';
+//     document.querySelector('#pic').setAttribute('src', monkeyPic);
+// });
 
-    const monkeyPic = state ? 'hanging-monkey.png' : 'siting-monkey.png';
-    document.querySelector('#pic').setAttribute('src', monkeyPic);
-});
-
-socket.on('monkey-update', monkeyUpdate =>
+socket.on('monkeys-update', monkeysUpdate =>
 {
-    console.log('monkey-update', monkeyUpdate);
+    document.querySelector('#data').textContent = JSON.stringify(monkeysUpdate);
+
+    console.log(monkeysUpdate);
 });
