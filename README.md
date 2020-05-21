@@ -4,7 +4,7 @@
 - Challenge: kto więcj, kto dłużej, kto dłużej w zgięciu
 - Wyświetlanie najlepszych @ w danych kategoriach
 
-
+ 
 
 MonkeyProxy ---> SessionFormer ---> Database
 [rPi client]     [state machine]    [mongo]                                                            
