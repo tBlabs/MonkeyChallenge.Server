@@ -7,7 +7,7 @@
     "license": "beerware",
     "engines": {
         "node": "12.14.1",
-        "npm": "6.13.1"
+        "npm": "6.13.4"
     },
     "scripts": {
         "x_preinstall": "sudo npm i -g typescript jest tslint npm-run-all",

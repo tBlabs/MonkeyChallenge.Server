@@ -2,4 +2,5 @@
 /coverage
 /_priv
 /.vscode
+/bin
 .env

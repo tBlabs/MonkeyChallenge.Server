@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const moq_ts_1 = require("moq.ts");
-const HangingDetector_1 = require("../src/Services/HangingDetector");
+const HangingDetector_1 = require("../src/Monkey/HangingDetector");
 test('HangingDetector should count duration', () => {
     const timeProvider = new moq_ts_1.Mock();
     let i = 0;

@@ -1,6 +1,6 @@
 import { Mock } from "moq.ts";
 import { IDateTimeProvider } from "../src/Services/DateTimeProvider/DateTimeProvider";
-import { HangingDetector } from "../src/Services/HangingDetector";
+import { HangingDetector } from "../src/Monkey/HangingDetector";
 
 test('HangingDetector should count duration', () =>
 {
