@@ -14,10 +14,12 @@ const inversify_1 = require("inversify");
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
+const path = require("path");
 const Repository_1 = require("./Persistance/Repository");
 const WebClients_1 = require("./WebClients");
 class GhostMonkeySocket {
     constructor() {
+        this.id = "FakeSocketId";
         this.handshake = { query: { id: "GhostMonkey3" } };
     }
     on(event, callback) {
@@ -42,9 +44,12 @@ let Main = class Main {
         this._webClients = _webClients;
     }
     get ClientDir() {
-        // const s = __dirname.split(path.sep); // __dirname returns '/home/tb/projects/EventsManager/bin'. We don't wanna 'bin'...
-        // const dir = [s.slice(0, s.length - 1), 'client'].join(path.sep);
-        const dir = "C:\\PrivProjects\\monkey-challenge-server\\client";
+        console.log(__dirname);
+        console.log(path.sep);
+        const s = __dirname.split(path.sep); // __dirname returns '/home/tb/projects/EventsManager/bin'. We don't wanna 'bin'...
+        console.log(s);
+        const dir = [s.slice(0, s.length - 2).join(path.sep), 'client'].join(path.sep);
+        // const dir = "C:\\PrivProjects\\monkey-challenge-server\\client";
         // const dir = __dirname;
         console.log('Static files dir:', dir);
         return dir;

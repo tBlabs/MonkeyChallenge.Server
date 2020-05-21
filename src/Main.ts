@@ -5,14 +5,13 @@ import * as express from 'express';
 import * as http from 'http';
 import * as socketIo from 'socket.io';
 import * as path from 'path';
-import { IStartupArgs } from './Services/Environment/IStartupArgs';
-import { IRunMode } from './Services/RunMode/IRunMode';
 import { SessionRepository } from './Persistance/Repository';
 import { WebClients } from './WebClients';
 import { Session } from './Persistance/Session';
 
 class GhostMonkeySocket
 {
+    public id = "FakeSocketId";
     public handshake = { query: { id: "GhostMonkey3" } };
     public on(event: string, callback: any)
     {
@@ -49,9 +48,12 @@ export class Main
 
     private get ClientDir(): string
     {
-        // const s = __dirname.split(path.sep); // __dirname returns '/home/tb/projects/EventsManager/bin'. We don't wanna 'bin'...
-        // const dir = [s.slice(0, s.length - 1), 'client'].join(path.sep);
-        const dir = "C:\\PrivProjects\\monkey-challenge-server\\client";
+        console.log(__dirname);
+        console.log(path.sep);
+        const s = __dirname.split(path.sep); // __dirname returns '/home/tb/projects/EventsManager/bin'. We don't wanna 'bin'...
+        console.log(s);
+        const dir = [s.slice(0, s.length - 2).join(path.sep), 'client'].join(path.sep);
+        // const dir = "C:\\PrivProjects\\monkey-challenge-server\\client";
         // const dir = __dirname;
         console.log('Static files dir:', dir);
         return dir;
