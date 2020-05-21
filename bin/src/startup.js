@@ -7,6 +7,7 @@ const IoC_1 = require("./IoC/IoC");
 const Main_1 = require("./Main");
 (async () => {
     try {
+        console.log('-------start---------');
         const main = IoC_1.IoC.get(Main_1.Main);
         await main.Start();
     }

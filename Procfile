@@ -1,1 +1,1 @@
-web: node ./bin/startup.js
+web: node ./bin/src/startup.js

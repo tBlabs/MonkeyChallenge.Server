@@ -11,6 +11,7 @@ import { Main } from './Main';
 {
     try
     {
+        console.log('-------start---------');
         const main: Main = IoC.get(Main);
         await main.Start();
     }
