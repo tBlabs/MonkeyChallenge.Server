@@ -11,7 +11,10 @@ import { Logger } from '../Services/Logger/Logger';
 import { Main } from '../Main';
 import { IStartupArgs } from '../Services/Environment/IStartupArgs';
 import { StartupArgs } from '../Services/Environment/StartupArgs';
-import { MonkeysFabric } from './../Monkey';
+import { MonkeysFactory } from "../Monkey/MonkeysFactory";
+import { SessionRepository } from './../Persistance/Repository';
+import { WebClients } from './../WebClients';
+import { IDateTimeProvider, DateTimeProvider } from './../Services/DateTimeProvider/DateTimeProvider';
 
 const IoC = new Container();
 
@@ -20,9 +23,12 @@ try
     IoC.bind<IEnvironment>(Types.IEnvironment).to(Environment).inSingletonScope().whenTargetIsDefault();
     IoC.bind<IRunMode>(Types.IRunMode).to(RunMode).inSingletonScope().whenTargetIsDefault();
     IoC.bind<ILogger>(Types.ILogger).to(Logger).inSingletonScope().whenTargetIsDefault();
+    IoC.bind<IDateTimeProvider>(Types.IDateTimeProvider).to(DateTimeProvider).inSingletonScope().whenTargetIsDefault();
     IoC.bind<IStartupArgs>(Types.IStartupArgs).to(StartupArgs).inSingletonScope().whenTargetIsDefault();
-    IoC.bind(MonkeysFabric).toSelf().inSingletonScope().whenTargetIsDefault();
+    IoC.bind(SessionRepository).toSelf().inSingletonScope().whenTargetIsDefault();
+    IoC.bind(MonkeysFactory).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind<Main>(Main).toSelf().inSingletonScope().whenTargetIsDefault();
+    IoC.bind<WebClients>(WebClients).toSelf().inSingletonScope().whenTargetIsDefault();
 }
 catch (ex)
 {

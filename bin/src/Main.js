@@ -9,96 +9,72 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Monkey_1 = require("./Monkey");
+const MonkeysFactory_1 = require("./Monkey/MonkeysFactory");
 const inversify_1 = require("inversify");
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
-const path = require("path");
-// export class Monkey
-// {
-//     constructor(
-//         public Id: string,
-//         public Sensors: any //SensorState[],
-//         )
-//     { 
-//     }
-// }
-// @injectable()
-// export class ProxyClients
-// {
-//     private collection: Monkey[] = [];
-//     constructor(private _webClients: WebClients)
-//     { }
-//     public Add(monkey: Monkey)
-//     {
-//         this.collection.push(monkey);
-//         monkey.socket.on('laser-sensor-state-change', (state) =>
-//         {
-//             this._webClients.List.forEach((webClient) =>
-//             {
-//                 webClient.SendMonkeyUpdate(monkey);
-//             });
-//         });
-//     }
-// }
+const Repository_1 = require("./Persistance/Repository");
+const WebClients_1 = require("./WebClients");
+class GhostMonkeySocket {
+    constructor() {
+        this.handshake = { query: { id: "GhostMonkey3" } };
+    }
+    on(event, callback) {
+        if (event === 'update') {
+            let x = 0;
+            setInterval(() => {
+                x = 1 - x;
+                callback({ SensorA: x });
+            }, 3000);
+            let p = 0;
+            setInterval(() => {
+                p = 1 - p;
+                callback({ SensorB: p });
+            }, 700);
+        }
+    }
+}
 let Main = class Main {
-    constructor(
-    // @inject(Types.IStartupArgs) private _args: IStartupArgs,
-    // @inject(Types.IRunMode) private _runMode: IRunMode,
-    _monkeysFabric) {
-        this._monkeysFabric = _monkeysFabric;
+    constructor(_repo, _monkeysFactory, _webClients) {
+        this._repo = _repo;
+        this._monkeysFactory = _monkeysFactory;
+        this._webClients = _webClients;
     }
     get ClientDir() {
-        const s = __dirname.split(path.sep); // __dirname returns '/home/tb/projects/EventsManager/bin'. We don't wanna 'bin'...
-        return s.slice(0, s.length - 1).join(path.sep) + '/client';
+        // const s = __dirname.split(path.sep); // __dirname returns '/home/tb/projects/EventsManager/bin'. We don't wanna 'bin'...
+        // const dir = [s.slice(0, s.length - 1), 'client'].join(path.sep);
+        const dir = "C:\\PrivProjects\\monkey-challenge-server\\client";
+        // const dir = __dirname;
+        console.log('Static files dir:', dir);
+        return dir;
     }
     async Start() {
         console.log('start');
-        // const repo = new Repository();
-        // await repo.Connect();
-        // return;
+        // if (0)
+        await this._repo.Connect();
+        // this._repo.AddSession(new Session("TestMonkey", "2020-1-1", "12:12:12", 5000, 5));
+        // return
         const server = express();
         const httpServer = http.createServer(server);
         const socketHost = socketIo(httpServer);
         const webSocketHost = socketHost.of('/web');
         const monkeySocketHost = socketHost.of('/monkey');
-        // const monkeys = {};
         webSocketHost.on('connection', (socket) => {
-            console.log('web', socket.id);
+            console.log('web connection @', socket.id);
+            this._webClients.Add(socket);
         });
         monkeySocketHost.on('connection', (socket) => {
             // new Monkey(socket);
-            this._monkeysFabric.Create(socket);
+            this._monkeysFactory.Create(socket);
         });
-        let guard = 0;
-        let state = 0;
-        setInterval(() => {
-            state = 1 - state;
-            webSocketHost.emit('monkey-update', { id: "GhostMonkey", state: state, timestamp: +new Date(), guard: guard++ });
-        }, 1000);
+        this._monkeysFactory.Create(new GhostMonkeySocket());
         server.get('/favicon.ico', (req, res) => res.status(204));
         server.get('/', (req, res) => res.send('Please go to /index.html'));
         server.get('/ping', (req, res) => res.send('pong'));
-        server.use(express.static(this.ClientDir));
-        // socketHost.on('connection', (webOrProxySocket) =>
-        // {
-        //     const clientType = webOrProxySocket.handshake.query.clientType;
-        //     switch (clientType)
-        //     {
-        //         default:
-        //             console.log('WEB (OR UNKNOWN) CLIENT CONNECTED', webOrProxySocket.id);
-        //             // this._webClients.Add(webOrProxySocket);
-        //             break;
-        //         case "monkey-proxy":
-        //             console.log('MONKEY-PROXY CONNECTED', webOrProxySocket.id);
-        //             const monkeyId = webOrProxySocket.handshake.query.monkeyId;
-        //             // this._proxyClients.Add(new Monkey(webOrProxySocket, monkeyId));
-        //             break;
-        //     }
-        // });
-        const port = process.env.PORT;
-        httpServer.listen(port, () => console.log('SERVER STARTED @ ' + port));
+        server.get('/monkey', (req, res) => res.send('pong'));
+        server.use('/', express.static(this.ClientDir));
+        httpServer.listen(process.env.PORT, () => console.log('MONKEY CHALLENGE SERVER STARTED @ ' + process.env.PORT));
         process.on('SIGINT', () => {
             httpServer.close(() => console.log('SERVER CLOSED'));
         });
@@ -106,7 +82,9 @@ let Main = class Main {
 };
 Main = __decorate([
     inversify_1.injectable(),
-    __metadata("design:paramtypes", [Monkey_1.MonkeysFabric])
+    __metadata("design:paramtypes", [Repository_1.SessionRepository,
+        MonkeysFactory_1.MonkeysFactory,
+        WebClients_1.WebClients])
 ], Main);
 exports.Main = Main;
 //# sourceMappingURL=Main.js.map

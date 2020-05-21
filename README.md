@@ -1,3 +1,14 @@
+# Pomysły
+
+- Total (suma sesji per dzień) powinien być kasowany o 4:00
+- Challenge: kto więcj, kto dłużej, kto dłużej w zgięciu
+- Wyświetlanie najlepszych @ w danych kategoriach
+
+
+
+MonkeyProxy ---> SessionFormer ---> Database
+[rPi client]     [state machine]    [mongo]                                                            
+
 # express.ts
 
 This a very basic startup project with `Node.js`, `ES7`, `Typescript` and `express` with `socket.io`.

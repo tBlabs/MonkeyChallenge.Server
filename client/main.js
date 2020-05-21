@@ -10,15 +10,9 @@ socket.on('disconnect', () =>
     console.log('Disconnected from server');
 });
 
-// socket.on('state', (state) =>
-// {
-//     const monkeyPic = state ? 'hanging-monkey.png' : 'siting-monkey.png';
-//     document.querySelector('#pic').setAttribute('src', monkeyPic);
-// });
-
-socket.on('monkeys-update', monkeysUpdate =>
+socket.on('update', (monkeyId, sensorState) =>
 {
-    document.querySelector('#data').textContent = JSON.stringify(monkeysUpdate);
+    document.querySelector('#data').textContent = monkeyId + ": " + JSON.stringify(sensorState);
 
-    console.log(monkeysUpdate);
+    console.log(monkeyId, sensorState);
 });

@@ -1,4 +1,4 @@
-import { PushupsCounter } from "../src/Services/PushupsCounter";
+import { PushupsCounter } from "../src/Monkey/PushupsCounter";
 
 test('PushupsCounter should count pushaps', () =>
 {

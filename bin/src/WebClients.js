@@ -7,25 +7,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const inversify_1 = require("inversify");
-let DateTimeProvider = class DateTimeProvider {
-    get Now() {
-        return new Date();
+let WebClients = class WebClients {
+    constructor() {
+        this.collection = [];
     }
-    get DateAsString() {
-        const now = new Date();
-        return `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+    Add(socket) {
+        socket.on('disconnect', () => {
+            console.log('web client disconnected');
+        });
+        this.collection.push(socket);
     }
-    get TimeAsString() {
-        const now = new Date();
-        return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+    get List() {
+        return this.collection;
     }
-    get DateTimeAsString() {
-        const now = new Date();
-        return `${this.DateAsString} ${this.TimeAsString}`;
+    SendMonkeyUpdate(monkeyId, data) {
+        this.collection.forEach((socket) => {
+            socket.emit('update', monkeyId, data);
+        });
+        // console.log(`Update sent to ${this.collection.length} web clients`);
     }
 };
-DateTimeProvider = __decorate([
+WebClients = __decorate([
     inversify_1.injectable()
-], DateTimeProvider);
-exports.DateTimeProvider = DateTimeProvider;
-//# sourceMappingURL=DateTimeProvider.js.map
+], WebClients);
+exports.WebClients = WebClients;
+//# sourceMappingURL=WebClients.js.map

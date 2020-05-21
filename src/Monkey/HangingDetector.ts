@@ -1,22 +1,26 @@
-import { IDateTimeProvider } from "./DateTimeProvider/DateTimeProvider";
+import { IDateTimeProvider } from "../Services/DateTimeProvider/DateTimeProvider";
 
 export class HangingDetector
 {
     private previousState = 0;
     private previousStateTime: Date = new Date();
     private duration: number = 0;
-    isCompleted = false;
-    constructor(private _dateTimeProvider: IDateTimeProvider) { }
+    private isCompleted = false;
+
+    constructor(private _dateTimeProvider: IDateTimeProvider) 
+    { }
 
     public get Duration()
     {
         return this.duration;
     }
+
     public get IsCompleted()
     {
         return this.isCompleted;
     }
-    public Update(state)
+
+    public Update(state: number)
     {
         const eventTime: Date = this._dateTimeProvider.Now;
         this.duration = +eventTime - +this.previousStateTime;
