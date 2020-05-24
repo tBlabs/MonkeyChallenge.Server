@@ -27,26 +27,7 @@ const path = require("path");
 const Repository_1 = require("./Persistance/Repository");
 const WebClients_1 = require("./WebClients");
 const Session_1 = require("./Persistance/Session");
-class GhostMonkeySocket {
-    constructor() {
-        this.id = "FakeSocketId";
-        this.handshake = { query: { id: "GhostMonkey1" } };
-    }
-    on(event, callback) {
-        if (event === 'update') {
-            let x = 0;
-            setInterval(() => {
-                x = 1 - x;
-                callback({ SensorA: x });
-            }, 3000);
-            let p = 0;
-            setInterval(() => {
-                p = 1 - p;
-                callback({ SensorB: p });
-            }, 700);
-        }
-    }
-}
+const GhostMonkeySocket_1 = require("./GhostMonkeySocket");
 let Main = class Main {
     constructor(_repo, _monkeysFactory, _webClients) {
         this._repo = _repo;
@@ -90,18 +71,29 @@ let Main = class Main {
                 this._webClients.Add(socket);
             });
             monkeySocketHost.on('connection', (socket) => {
-                // new Monkey(socket);
                 this._monkeysFactory.Create(socket);
             });
-            this._monkeysFactory.Create(new GhostMonkeySocket());
+            this._monkeysFactory.Create(new GhostMonkeySocket_1.GhostMonkeySocket("GhostMonkey1", 3000, 700));
+            this._monkeysFactory.Create(new GhostMonkeySocket_1.GhostMonkeySocket("GhostMonkey2", 8000, 1200));
+            // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey3", 1000, 200));
             server.get('/favicon.ico', (req, res) => res.status(204));
-            server.get('/', (req, res) => res.send('Please go to /index.html'));
+            server.get('/', (req, res) => {
+                const msg = `
+            <b>/index.html</b> - prints monkeys sensors state (only one change at a time)<br><br>
+            <b>/monkeys</b> - returns summaries of all monkeys<br>
+            <b>/last/:days/for/:monkeyId</b> - returns last {days} of MonkeyDay`;
+                res.send(msg);
+            });
             server.get('/ping', (req, res) => res.send('pong'));
-            server.get('/last/:days/for/:monkeyId/', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            server.get('/last/:days/for/:monkeyId', (req, res) => __awaiter(this, void 0, void 0, function* () {
                 const monkeyId = req.params.monkeyId;
                 const days = +req.params.days;
                 const result = yield this._repo.GetLastTotals(monkeyId, days);
                 // console.log('res', result);
+                res.send(result);
+            }));
+            server.get('/monkeys', (req, res) => __awaiter(this, void 0, void 0, function* () {
+                const result = yield this._repo.GetMonkeysSummaries();
                 res.send(result);
             }));
             server.use('/', express.static(this.ClientDir));

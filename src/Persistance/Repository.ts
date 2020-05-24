@@ -7,20 +7,21 @@ import { Types } from '../IoC/Types';
 @injectable()
 export class SessionRepository
 {
-
     private MinusDays(d: Date, days: number): Date
     {
         const date = new Date();
         return new Date(date.setDate(date.getDate() - days));
     }
+
     public async GetLastTotals(monkeyId: string, days: number): Promise<DailySummary[]>
     {
         const now = this._date.Now;
-        const from: Date  = this.MinusDays(now, days);
+        const from: Date = this.MinusDays(now, days);
         const totals = await this.GetTotals(monkeyId, { from: from, to: now });
         if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
         return totals;
     }
+
     public async GetTotals(monkeyId: string, range: { from: Date; to: Date; }): Promise<DailySummary[]>
     {
         range.to.setHours(25);
@@ -31,7 +32,15 @@ export class SessionRepository
 
         // console.log('QUERY', JSON.stringify(query));
         let totals: MonkeyDay[] = await this.totalsCollection.find(query).toArray();
-        return totals.map(x=>new DailySummary(x.Date, x.SessionsCount, x.TotalPushups, x.SessionsCount));
+        return totals.map(x => new DailySummary(x.Date, x.SessionsCount, x.TotalPushups, x.SessionsCount));
+    }
+
+    public async GetMonkeysSummaries(): Promise<MonkeySummary[]>
+    {
+        const query = {};
+        let totals: MonkeySummary[] = await this.totalsCollection.find(query).toArray();
+
+        return totals.map(x => new MonkeySummary(x.MonkeyId, x.TotalDuration, x.TotalPushups, x.SessionsCount));
     }
 
     constructor(@inject(Types.IDateTimeProvider) private _date: IDateTimeProvider)
@@ -48,7 +57,7 @@ export class SessionRepository
             await this.sessionsCollection.drop();
             await this.totalsCollection.drop();
             await this.summariesCollection.drop();
-        } 
+        }
         catch (error)
         { }
     }

@@ -8,33 +8,7 @@ import * as path from 'path';
 import { SessionRepository } from './Persistance/Repository';
 import { WebClients } from './WebClients';
 import { Session, DailySummary, MonkeyDay, MonkeyId } from './Persistance/Session';
-
-class GhostMonkeySocket
-{
-    public id = "FakeSocketId";
-    public handshake = { query: { id: "GhostMonkey1" } };
-    public on(event: string, callback: any)
-    {
-        if (event === 'update')
-        {
-            let x = 0;
-            setInterval(() =>
-            {
-                x = 1 - x;
-                callback({ SensorA: x });
-            },
-                3000);
-
-            let p = 0;
-            setInterval(() =>
-            {
-                p = 1 - p;
-                callback({ SensorB: p });
-            },
-                700);
-        }
-    }
-}
+import { GhostMonkeySocket } from "./GhostMonkeySocket";
 
 @injectable()
 export class Main
@@ -98,21 +72,33 @@ export class Main
 
         monkeySocketHost.on('connection', (socket) =>
         {
-            // new Monkey(socket);
             this._monkeysFactory.Create(socket);
         });
 
-        this._monkeysFactory.Create(new GhostMonkeySocket());
+        this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey1", 3000, 700));
+        this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey2", 8000, 1200));
+        // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey3", 1000, 200));
 
         server.get('/favicon.ico', (req, res) => res.status(204));
-        server.get('/', (req, res) => res.send('Please go to /index.html'));
+        server.get('/', (req, res) => {
+            const msg = `
+            <b>/index.html</b> - prints monkeys sensors state (only one change at a time)<br><br>
+            <b>/monkeys</b> - returns summaries of all monkeys<br>
+            <b>/last/:days/for/:monkeyId</b> - returns last {days} of MonkeyDay`;
+            res.send(msg);
+        });
         server.get('/ping', (req, res) => res.send('pong'));
-        server.get('/last/:days/for/:monkeyId/', async (req, res) =>
+        server.get('/last/:days/for/:monkeyId', async (req, res) =>
         {
             const monkeyId = req.params.monkeyId;
             const days = +req.params.days;
             const result = await this._repo.GetLastTotals(monkeyId, days);
             // console.log('res', result);
+            res.send(result);
+        });
+        server.get('/monkeys', async (req, res) =>
+        {
+            const result = await this._repo.GetMonkeysSummaries();
             res.send(result);
         });
         server.use('/', express.static(this.ClientDir));

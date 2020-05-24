@@ -55,6 +55,13 @@ let SessionRepository = class SessionRepository {
             return totals.map(x => new Session_1.DailySummary(x.Date, x.SessionsCount, x.TotalPushups, x.SessionsCount));
         });
     }
+    GetMonkeysSummaries() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = {};
+            let totals = yield this.totalsCollection.find(query).toArray();
+            return totals.map(x => new Session_1.MonkeySummary(x.MonkeyId, x.TotalDuration, x.TotalPushups, x.SessionsCount));
+        });
+    }
     Drop() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
