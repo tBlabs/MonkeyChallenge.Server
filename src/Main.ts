@@ -7,12 +7,12 @@ import * as socketIo from 'socket.io';
 import * as path from 'path';
 import { SessionRepository } from './Persistance/Repository';
 import { WebClients } from './WebClients';
-import { Session } from './Persistance/Session';
+import { Session, DailySummary, MonkeyDay, MonkeyId } from './Persistance/Session';
 
 class GhostMonkeySocket
 {
     public id = "FakeSocketId";
-    public handshake = { query: { id: "GhostMonkey3" } };
+    public handshake = { query: { id: "GhostMonkey1" } };
     public on(event: string, callback: any)
     {
         if (event === 'update')
@@ -20,7 +20,7 @@ class GhostMonkeySocket
             let x = 0;
             setInterval(() =>
             {
-                x=1-x;
+                x = 1 - x;
                 callback({ SensorA: x });
             },
                 3000);
@@ -28,7 +28,7 @@ class GhostMonkeySocket
             let p = 0;
             setInterval(() =>
             {
-                p=1-p;
+                p = 1 - p;
                 callback({ SensorB: p });
             },
                 700);
@@ -48,14 +48,9 @@ export class Main
 
     private get ClientDir(): string
     {
-        console.log(__dirname);
-        console.log(path.sep);
-        const s = __dirname.split(path.sep); // __dirname returns '/home/tb/projects/EventsManager/bin'. We don't wanna 'bin'...
-        console.log(s);
+        const s = __dirname.split(path.sep);
         const dir = [s.slice(0, s.length - 2).join(path.sep), 'client'].join(path.sep);
-        // const dir = "C:\\PrivProjects\\monkey-challenge-server\\client";
-        // const dir = __dirname;
-        console.log('Static files dir:', dir);
+        console.log('Static files @', dir);
         return dir;
     }
 
@@ -63,12 +58,28 @@ export class Main
     {
         console.log('start');
 
-        // if (0)
-         await this._repo.Connect();
+        await this._repo.Connect();
 
-            // this._repo.AddSession(new Session("TestMonkey", "2020-1-1", "12:12:12", 5000, 5));
-  
-            // return
+        // await this._repo.Drop();
+        if (0)
+        {
+            await this._repo.Drop();
+
+            await this._repo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 0, 1), 5000, 1));
+            await this._repo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 0, 1), 5000, 1));
+            await this._repo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 10, 2), 5000, 1));
+            await this._repo.AddSession(new Session("TestMonkey", new Date(2020, 1, 1, 13, 0, 3), 5000, 2));
+            await this._repo.AddSession(new Session("TestMonkey", new Date(2020, 1, 1, 12, 10, 0), 5000, 2));
+            await this._repo.AddSession(new Session("TestMonkey", new Date(2020, 1, 2, 10, 0, 0), 5000, 3));
+            await this._repo.AddSession(new Session("TestMonkey", new Date(2020, 1, 2, 10, 10, 0), 5000, 3));
+            await this._repo.AddSession(new Session("TestMonkey", new Date(), 5000, 3));
+            await this._repo.AddSession(new Session("TestMonkey", new Date(), 5000, 3));
+
+            let r: DailySummary[] = [];
+            r = await this._repo.GetLastTotals("TestMonkey", 7);
+            console.log('rrrrrrrr', r.map(x => JSON.stringify(x)));
+            return
+        }
 
 
         const server = express();
@@ -77,32 +88,34 @@ export class Main
         const webSocketHost = socketHost.of('/web');
         const monkeySocketHost = socketHost.of('/monkey');
 
-        
+
         webSocketHost.on('connection', (socket) =>
         {
             console.log('web connection @', socket.id);
-            
+
             this._webClients.Add(socket);
         });
-        
+
         monkeySocketHost.on('connection', (socket) =>
         {
             // new Monkey(socket);
             this._monkeysFactory.Create(socket);
         });
-        
+
         this._monkeysFactory.Create(new GhostMonkeySocket());
 
         server.get('/favicon.ico', (req, res) => res.status(204));
-
         server.get('/', (req, res) => res.send('Please go to /index.html'));
         server.get('/ping', (req, res) => res.send('pong'));
-        server.get('/monkey', (req, res) => res.send('pong'));
-
-
+        server.get('/last/:days/for/:monkeyId/', async (req, res) =>
+        {
+            const monkeyId = req.params.monkeyId;
+            const days = +req.params.days;
+            const result = await this._repo.GetLastTotals(monkeyId, days);
+            // console.log('res', result);
+            res.send(result);
+        });
         server.use('/', express.static(this.ClientDir));
-
-
 
         httpServer.listen(process.env.PORT, () => console.log('MONKEY CHALLENGE SERVER STARTED @ ' + process.env.PORT));
 

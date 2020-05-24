@@ -33,7 +33,7 @@ export class Monkey
                 console.log(`${monkeyId} did ${count} pushups in ${duration}ms`);
 
                 // if (0)
-                _repo.AddSession(new Session(monkeyId, _date.DateAsString, _date.TimeAsString, duration, count));
+                _repo.AddSession(new Session(monkeyId, _date.Now, duration, count));
             });
         });
     }
