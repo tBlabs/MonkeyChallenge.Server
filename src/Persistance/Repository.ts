@@ -18,7 +18,7 @@ export class SessionRepository
         const now = this._date.Now;
         const from: Date = this.MinusDays(now, days);
         const totals = await this.GetTotals(monkeyId, { from: from, to: now });
-        if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
+     //   if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
         return totals;
     }
 

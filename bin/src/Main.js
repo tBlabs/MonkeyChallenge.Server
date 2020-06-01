@@ -24,6 +24,7 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const path = require("path");
+const cors = require("cors");
 const Repository_1 = require("./Persistance/Repository");
 const WebClients_1 = require("./WebClients");
 const Session_1 = require("./Persistance/Session");
@@ -62,6 +63,7 @@ let Main = class Main {
                 return;
             }
             const server = express();
+            server.use(cors());
             const httpServer = http.createServer(server);
             const socketHost = socketIo(httpServer);
             const webSocketHost = socketHost.of('/web');

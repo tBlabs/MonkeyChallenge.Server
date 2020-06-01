@@ -5,6 +5,7 @@ import * as express from 'express';
 import * as http from 'http';
 import * as socketIo from 'socket.io';
 import * as path from 'path';
+import * as cors from 'cors';
 import { SessionRepository } from './Persistance/Repository';
 import { WebClients } from './WebClients';
 import { Session, DailySummary, MonkeyDay, MonkeyId } from './Persistance/Session';
@@ -57,6 +58,7 @@ export class Main
 
 
         const server = express();
+        server.use(cors());
         const httpServer = http.createServer(server);
         const socketHost = socketIo(httpServer);
         const webSocketHost = socketHost.of('/web');

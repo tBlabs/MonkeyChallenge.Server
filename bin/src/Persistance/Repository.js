@@ -38,8 +38,7 @@ let SessionRepository = class SessionRepository {
             const now = this._date.Now;
             const from = this.MinusDays(now, days);
             const totals = yield this.GetTotals(monkeyId, { from: from, to: now });
-            if (totals.length > days)
-                throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`);
+            //   if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
             return totals;
         });
     }
