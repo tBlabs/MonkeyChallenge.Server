@@ -4,5 +4,6 @@ export const Types =
     IDateTimeProvider: Symbol('IDateTimeProvider'),
     ILogger: Symbol('ILogger'),
     IRunMode: Symbol('IRunMode'),
-    IStartupArgs: Symbol('IStartupArgs')
+    IStartupArgs: Symbol('IStartupArgs'),
+    // IDatabase: Symbol('IDatabase'),
 };

@@ -21,13 +21,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongodb_1 = require("mongodb");
-const Session_1 = require("./Session");
+const MonkeyTotalEntity_1 = require("./Entities/MonkeyTotalEntity");
+const MonkeyDailyTotalEntity_1 = require("./Entities/MonkeyDailyTotalEntity");
+const SessionEntity_1 = require("./Entities/SessionEntity");
 const inversify_1 = require("inversify");
 const Types_1 = require("../IoC/Types");
+const Database_1 = require("./Database");
 let SessionRepository = class SessionRepository {
-    constructor(_date) {
+    constructor(_db, _date) {
+        this._db = _db;
         this._date = _date;
+    }
+    Init() {
+        this.sessionsCollection = this._db.Collection("sessions");
+        this.totalsCollection = this._db.Collection("totals");
+        this.dailyTotalsCollection = this._db.Collection("dailyTotals");
     }
     MinusDays(d, days) {
         const date = new Date();
@@ -37,12 +45,12 @@ let SessionRepository = class SessionRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const now = this._date.Now;
             const from = this.MinusDays(now, days);
-            const totals = yield this.GetTotals(monkeyId, { from: from, to: now });
+            const totals = yield this.GetDailyTotals(monkeyId, { from: from, to: now });
             //   if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
             return totals;
         });
     }
-    GetTotals(monkeyId, range) {
+    GetDailyTotals(monkeyId, range) {
         return __awaiter(this, void 0, void 0, function* () {
             range.to.setHours(25);
             range.to.setMinutes(59);
@@ -50,95 +58,85 @@ let SessionRepository = class SessionRepository {
             range.to.setMilliseconds(999);
             const query = { MonkeyId: monkeyId, Date: { "$gte": range.from, "$lte": range.to } };
             // console.log('QUERY', JSON.stringify(query));
-            let totals = yield this.totalsCollection.find(query).toArray();
-            return totals.map(x => new Session_1.DailySummary(x.Date, x.SessionsCount, x.TotalPushups, x.SessionsCount));
+            let totals = yield this.dailyTotalsCollection.find(query).toArray();
+            return totals.map(x => new MonkeyDailyTotalEntity_1.MonkeyDailyTotalEntity(monkeyId, x.Date, x.SessionsCount, x.TotalPushups, x.SessionsCount));
         });
     }
-    GetMonkeysSummaries() {
+    GetMonkeyTotal(monkeyId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = {};
-            let totals = yield this.totalsCollection.find(query).toArray();
-            return totals.map(x => new Session_1.MonkeySummary(x.MonkeyId, x.TotalDuration, x.TotalPushups, x.SessionsCount));
+            const query = { MonkeyId: monkeyId };
+            let total = yield this.totalsCollection.findOne(query);
+            if (total === null)
+                return MonkeyTotalEntity_1.MonkeyTotalEntity.Empty;
+            return total;
         });
     }
     Drop() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.sessionsCollection.drop();
+                yield this.dailyTotalsCollection.drop();
                 yield this.totalsCollection.drop();
-                yield this.summariesCollection.drop();
             }
             catch (error) { }
         });
     }
-    Connect() {
+    AddSession(id, duration, count) {
         return __awaiter(this, void 0, void 0, function* () {
+            const session = new SessionEntity_1.SessionEntity(id, this._date.Now, duration, count);
             try {
-                const uri = "mongodb://heroku_p0sgdkrk:h0iopgndqjhrochm8qp3crknpn@ds341247.mlab.com:41247/heroku_p0sgdkrk";
-                this.client = new mongodb_1.MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-                yield this.client.connect();
-                console.log("Connected successfully to database server");
-                this.db = this.client.db("heroku_p0sgdkrk");
-                this.sessionsCollection = this.db.collection("sessions");
-                this.totalsCollection = this.db.collection("totals");
-                this.summariesCollection = this.db.collection("summaries");
+                if (0)
+                    yield this.sessionsCollection.insertOne(session);
+                yield this.UpdateDailyTotal(session);
+                yield this.UpdateTotal(session);
             }
             catch (error) {
-                console.log('DATABASE PROBLEM:', error);
+                console.log('MONGODB ERROR', error);
             }
         });
     }
-    Close() {
-        this.client.close();
-    }
-    AddSession(session) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.sessionsCollection.insertOne(session);
-            yield this.UpdateTotal(session);
-            yield this.UpdateSummary(session);
-        });
-    }
-    UpdateSummary(session) {
+    UpdateTotal(session) {
         return __awaiter(this, void 0, void 0, function* () {
             const searchObj = { MonkeyId: session.MonkeyId };
-            let summary = yield this.summariesCollection.findOne(searchObj);
+            let summary = yield this.totalsCollection.findOne(searchObj);
             if (summary == null) {
-                summary = new Session_1.MonkeySummary(session.MonkeyId, session.Duration, session.Pushups, 1);
-                yield this.summariesCollection.insertOne(summary);
+                summary = new MonkeyTotalEntity_1.MonkeyTotalEntity(session.MonkeyId, session.Duration, session.Pushups, 1);
+                yield this.totalsCollection.insertOne(summary);
             }
             else {
                 summary.TotalDuration += session.Duration;
                 summary.TotalPushups += session.Pushups;
                 summary.SessionsCount += 1;
-                yield this.summariesCollection.replaceOne(searchObj, summary);
+                //console.log('T', summary);
+                yield this.totalsCollection.replaceOne(searchObj, summary);
             }
         });
     }
-    UpdateTotal(session) {
+    UpdateDailyTotal(session) {
         return __awaiter(this, void 0, void 0, function* () {
             session.Date.setHours(2); // Nie mam pojęcia czemu trzeba wpisać 2 żeby w bazie była godzina 00
             session.Date.setMinutes(0);
             session.Date.setSeconds(0);
             session.Date.setMilliseconds(0);
             const searchObj = { MonkeyId: session.MonkeyId, Date: session.Date };
-            let total = yield this.totalsCollection.findOne(searchObj);
+            let total = yield this.dailyTotalsCollection.findOne(searchObj);
             if (total == null) {
-                total = new Session_1.MonkeyDay(session.MonkeyId, session.Date, session.Duration, session.Pushups, 1);
-                yield this.totalsCollection.insertOne(total);
+                total = new MonkeyDailyTotalEntity_1.MonkeyDailyTotalEntity(session.MonkeyId, session.Date, session.Duration, session.Pushups, 1);
+                yield this.dailyTotalsCollection.insertOne(total);
             }
             else {
                 total.TotalDuration += session.Duration;
                 total.TotalPushups += session.Pushups;
                 total.SessionsCount += 1;
-                yield this.totalsCollection.replaceOne(searchObj, total);
+                yield this.dailyTotalsCollection.replaceOne(searchObj, total);
             }
         });
     }
 };
 SessionRepository = __decorate([
     inversify_1.injectable(),
-    __param(0, inversify_1.inject(Types_1.Types.IDateTimeProvider)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, inversify_1.inject(Types_1.Types.IDateTimeProvider)),
+    __metadata("design:paramtypes", [Database_1.Database, Object])
 ], SessionRepository);
 exports.SessionRepository = SessionRepository;
 //# sourceMappingURL=Repository.js.map

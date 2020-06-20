@@ -11,6 +11,8 @@ const Main_1 = require("../Main");
 const StartupArgs_1 = require("../Services/Environment/StartupArgs");
 const MonkeysFactory_1 = require("../Monkey/MonkeysFactory");
 const Repository_1 = require("./../Persistance/Repository");
+const MonkeysRepo_1 = require("./../Persistance/MonkeysRepo");
+const Database_1 = require("./../Persistance/Database");
 const WebClients_1 = require("./../WebClients");
 const DateTimeProvider_1 = require("./../Services/DateTimeProvider/DateTimeProvider");
 const IoC = new inversify_1.Container();
@@ -21,6 +23,9 @@ try {
     IoC.bind(Types_1.Types.ILogger).to(Logger_1.Logger).inSingletonScope().whenTargetIsDefault();
     IoC.bind(Types_1.Types.IDateTimeProvider).to(DateTimeProvider_1.DateTimeProvider).inSingletonScope().whenTargetIsDefault();
     IoC.bind(Types_1.Types.IStartupArgs).to(StartupArgs_1.StartupArgs).inSingletonScope().whenTargetIsDefault();
+    IoC.bind(Database_1.Database).toSelf().inSingletonScope().whenTargetIsDefault();
+    // IoC.bind(Types.IDatabase).to(Database).inSingletonScope().whenTargetIsDefault();
+    IoC.bind(MonkeysRepo_1.MonkeysRepo).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(Repository_1.SessionRepository).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(MonkeysFactory_1.MonkeysFactory).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(Main_1.Main).toSelf().inSingletonScope().whenTargetIsDefault();

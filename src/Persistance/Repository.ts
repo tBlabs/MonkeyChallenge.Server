@@ -1,28 +1,47 @@
-import { DateTimeProvider, IDateTimeProvider } from './../Services/DateTimeProvider/DateTimeProvider';
-import { MongoClient } from 'mongodb';
-import { Session, MonkeyDay, MonkeyId, DailySummary, MonkeySummary } from './Session';
+import { IDateTimeProvider } from './../Services/DateTimeProvider/DateTimeProvider';
+import { MonkeyTotalEntity } from "./Entities/MonkeyTotalEntity";
+import { MonkeyId } from "./Types/MonkeyId";
+import { MonkeyDailyTotalEntity } from "./Entities/MonkeyDailyTotalEntity";
+import { SessionEntity } from "./Entities/SessionEntity";
 import { injectable, inject } from 'inversify';
 import { Types } from '../IoC/Types';
+import { Database } from './Database';
 
 @injectable()
 export class SessionRepository
 {
+    constructor(
+        private _db: Database,
+        @inject(Types.IDateTimeProvider) private _date: IDateTimeProvider)
+    { }
+
+    public Init()
+    {
+        this.sessionsCollection = this._db.Collection("sessions");
+        this.totalsCollection = this._db.Collection("totals");
+        this.dailyTotalsCollection = this._db.Collection("dailyTotals");
+    }
+
+    private sessionsCollection;
+    private dailyTotalsCollection;
+    private totalsCollection;
+
     private MinusDays(d: Date, days: number): Date
     {
         const date = new Date();
         return new Date(date.setDate(date.getDate() - days));
     }
 
-    public async GetLastTotals(monkeyId: string, days: number): Promise<DailySummary[]>
+    public async GetLastTotals(monkeyId: string, days: number): Promise<MonkeyDailyTotalEntity[]>
     {
         const now = this._date.Now;
         const from: Date = this.MinusDays(now, days);
-        const totals = await this.GetTotals(monkeyId, { from: from, to: now });
-     //   if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
+        const totals = await this.GetDailyTotals(monkeyId, { from: from, to: now });
+        //   if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
         return totals;
     }
 
-    public async GetTotals(monkeyId: string, range: { from: Date; to: Date; }): Promise<DailySummary[]>
+    private async GetDailyTotals(monkeyId: string, range: { from: Date; to: Date; }): Promise<MonkeyDailyTotalEntity[]>
     {
         range.to.setHours(25);
         range.to.setMinutes(59);
@@ -31,88 +50,69 @@ export class SessionRepository
         const query = { MonkeyId: monkeyId, Date: { "$gte": range.from, "$lte": range.to } };
 
         // console.log('QUERY', JSON.stringify(query));
-        let totals: MonkeyDay[] = await this.totalsCollection.find(query).toArray();
-        return totals.map(x => new DailySummary(x.Date, x.SessionsCount, x.TotalPushups, x.SessionsCount));
+        let totals: MonkeyDailyTotalEntity[] = await this.dailyTotalsCollection.find(query).toArray();
+        return totals.map(x => new MonkeyDailyTotalEntity(monkeyId, x.Date, x.SessionsCount, x.TotalPushups, x.SessionsCount));
     }
 
-    public async GetMonkeysSummaries(): Promise<MonkeySummary[]>
+    public async GetMonkeyTotal(monkeyId: MonkeyId): Promise<MonkeyTotalEntity>
     {
-        const query = {};
-        let totals: MonkeySummary[] = await this.totalsCollection.find(query).toArray();
+        const query = { MonkeyId: monkeyId };
+        let total: MonkeyTotalEntity = await this.totalsCollection.findOne(query);
 
-        return totals.map(x => new MonkeySummary(x.MonkeyId, x.TotalDuration, x.TotalPushups, x.SessionsCount));
+        if (total === null) return MonkeyTotalEntity.Empty;
+
+        return total;
     }
 
-    constructor(@inject(Types.IDateTimeProvider) private _date: IDateTimeProvider)
-    { }
-    private client!: MongoClient;
-    private db;
-    private sessionsCollection;
-    private totalsCollection;
-    private summariesCollection;
     public async Drop()
     {
         try
         {
             await this.sessionsCollection.drop();
+            await this.dailyTotalsCollection.drop();
             await this.totalsCollection.drop();
-            await this.summariesCollection.drop();
         }
         catch (error)
         { }
     }
-    public async Connect()
+
+    public async AddSession(id, duration, count)
     {
+        const session = new SessionEntity(id, this._date.Now, duration, count);
+
         try
         {
-            const uri = "mongodb://heroku_p0sgdkrk:h0iopgndqjhrochm8qp3crknpn@ds341247.mlab.com:41247/heroku_p0sgdkrk";
-            this.client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-            await this.client.connect();
-            console.log("Connected successfully to database server");
-            this.db = this.client.db("heroku_p0sgdkrk");
-
-            this.sessionsCollection = this.db.collection("sessions");
-            this.totalsCollection = this.db.collection("totals");
-            this.summariesCollection = this.db.collection("summaries");
-        }
+            if (0) await this.sessionsCollection.insertOne(session);
+            await this.UpdateDailyTotal(session);
+            await this.UpdateTotal(session);
+        } 
         catch (error)
         {
-            console.log('DATABASE PROBLEM:', error);
+            console.log('MONGODB ERROR', error);
         }
     }
 
-    public Close()
-    {
-        this.client.close();
-    }
-
-    public async AddSession(session: Session)
-    {
-        await this.sessionsCollection.insertOne(session);
-        await this.UpdateTotal(session);
-        await this.UpdateSummary(session);
-    }
-    private async UpdateSummary(session: Session): Promise<void>
+    private async UpdateTotal(session: SessionEntity): Promise<void>
     {
         const searchObj = { MonkeyId: session.MonkeyId };
 
-        let summary: MonkeySummary = await this.summariesCollection.findOne(searchObj);
-
+        let summary: MonkeyTotalEntity = await this.totalsCollection.findOne(searchObj);
         if (summary == null)
         {
-            summary = new MonkeySummary(session.MonkeyId, session.Duration, session.Pushups, 1);
-            await this.summariesCollection.insertOne(summary);
+            summary = new MonkeyTotalEntity(session.MonkeyId, session.Duration, session.Pushups, 1);
+            await this.totalsCollection.insertOne(summary);
         }
         else 
         {
             summary.TotalDuration += session.Duration;
             summary.TotalPushups += session.Pushups;
             summary.SessionsCount += 1;
-            await this.summariesCollection.replaceOne(searchObj, summary);
+            //console.log('T', summary);
+            await this.totalsCollection.replaceOne(searchObj, summary);
         }
     }
 
-    private async UpdateTotal(session: Session)
+    private async UpdateDailyTotal(session: SessionEntity)
     {
         session.Date.setHours(2); // Nie mam pojęcia czemu trzeba wpisać 2 żeby w bazie była godzina 00
         session.Date.setMinutes(0);
@@ -121,19 +121,19 @@ export class SessionRepository
 
         const searchObj = { MonkeyId: session.MonkeyId, Date: session.Date };
 
-        let total: MonkeyDay = await this.totalsCollection.findOne(searchObj);
+        let total: MonkeyDailyTotalEntity = await this.dailyTotalsCollection.findOne(searchObj);
 
         if (total == null)
         {
-            total = new MonkeyDay(session.MonkeyId, session.Date, session.Duration, session.Pushups, 1);
-            await this.totalsCollection.insertOne(total);
+            total = new MonkeyDailyTotalEntity(session.MonkeyId, session.Date, session.Duration, session.Pushups, 1);
+            await this.dailyTotalsCollection.insertOne(total);
         }
         else 
         {
             total.TotalDuration += session.Duration;
             total.TotalPushups += session.Pushups;
             total.SessionsCount += 1;
-            await this.totalsCollection.replaceOne(searchObj, total);
+            await this.dailyTotalsCollection.replaceOne(searchObj, total);
         }
     }
 }

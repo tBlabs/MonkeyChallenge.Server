@@ -5,6 +5,6 @@ exports.Types = {
     IDateTimeProvider: Symbol('IDateTimeProvider'),
     ILogger: Symbol('ILogger'),
     IRunMode: Symbol('IRunMode'),
-    IStartupArgs: Symbol('IStartupArgs')
+    IStartupArgs: Symbol('IStartupArgs'),
 };
 //# sourceMappingURL=Types.js.map

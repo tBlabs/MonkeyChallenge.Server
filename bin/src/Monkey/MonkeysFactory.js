@@ -28,10 +28,10 @@ let MonkeysFactory = class MonkeysFactory {
         this._date = _date;
     }
     Create(socket) {
-        const pushapsCounter = new PushupsCounter_1.PushupsCounter();
+        const pushupsCounter = new PushupsCounter_1.PushupsCounter();
         const hangingDetector = new HangingDetector_1.HangingDetector(new DateTimeProvider_1.DateTimeProvider());
-        const sessionFormer = new SessionFormer_1.SessionFormer(pushapsCounter, hangingDetector);
-        return new Monkey_1.Monkey(this._repo, this._web, sessionFormer, socket, this._date);
+        const sessionFormer = new SessionFormer_1.SessionFormer(pushupsCounter, hangingDetector);
+        return new Monkey_1.Monkey(socket, this._repo, this._web, sessionFormer);
     }
 };
 MonkeysFactory = __decorate([

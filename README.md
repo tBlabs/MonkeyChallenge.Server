@@ -1,3 +1,10 @@
+# CO KONIECZNIE TRZEBA POPRAWIĆ
+
+- w tej chwili małpy nie są podzielone na grupy więc stan wszystkich drajwerów jest rozsyłany 
+  do wszystkich klientów. tak docelowo nie może być!
+- po przeładowaniu klienta informacja o trwającej sesji nie jest dostępna.
+
+
 # Pomysły
 
 - Total (suma sesji per dzień) powinien być kasowany o 4:00

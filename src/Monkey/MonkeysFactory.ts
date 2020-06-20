@@ -17,10 +17,10 @@ export class MonkeysFactory
     
     public Create(socket)
     {
-        const pushapsCounter = new PushupsCounter();
+        const pushupsCounter = new PushupsCounter();
         const hangingDetector = new HangingDetector(new DateTimeProvider());
-        const sessionFormer = new SessionFormer(pushapsCounter, hangingDetector);
+        const sessionFormer = new SessionFormer(pushupsCounter, hangingDetector);
 
-        return new Monkey(this._repo, this._web, sessionFormer, socket, this._date);
+        return new Monkey(socket, this._repo, this._web, sessionFormer);
     }
 }

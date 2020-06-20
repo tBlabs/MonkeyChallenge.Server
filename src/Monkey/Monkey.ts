@@ -1,7 +1,7 @@
 import { IDateTimeProvider } from './../Services/DateTimeProvider/DateTimeProvider';
 import { WebClients } from '../WebClients';
 import { SessionRepository } from '../Persistance/Repository';
-import { Session } from '../Persistance/Session';
+import { SessionEntity } from "../Persistance/Entities/SessionEntity";
 import { SessionFormer } from './SessionFormer';
 import { inject } from 'inversify';
 import { Types } from '../IoC/Types';
@@ -9,14 +9,14 @@ import { Types } from '../IoC/Types';
 export class Monkey
 {
     constructor(
+        
+        private socket,
         private _repo: SessionRepository,
         private _web: WebClients,
-        private _sessionFormer: SessionFormer,
-        private socket,
-        private _date: IDateTimeProvider)
+        private _sessionFormer: SessionFormer)
     {
         const monkeyId = socket.handshake.query.id;
-        console.log(`${monkeyId} connected @ ${socket.id}`);
+        console.log(`Monkey ${monkeyId} connected @ ${socket.id}`);
 
         socket.on('disconnect', () =>
         {
@@ -33,7 +33,7 @@ export class Monkey
                 console.log(`${monkeyId} did ${count} pushups in ${duration}ms`);
 
                 // if (0)
-                _repo.AddSession(new Session(monkeyId, _date.Now, duration, count));
+                _repo.AddSession(monkeyId, duration, count);
             });
         });
     }
