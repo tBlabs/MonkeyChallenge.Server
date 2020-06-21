@@ -26,12 +26,22 @@ let MonkeysFactory = class MonkeysFactory {
         this._repo = _repo;
         this._web = _web;
         this._date = _date;
+        this.monkeys = [];
+        this.count = 0;
     }
     Create(socket) {
         const pushupsCounter = new PushupsCounter_1.PushupsCounter();
         const hangingDetector = new HangingDetector_1.HangingDetector(new DateTimeProvider_1.DateTimeProvider());
         const sessionFormer = new SessionFormer_1.SessionFormer(pushupsCounter, hangingDetector);
-        return new Monkey_1.Monkey(socket, this._repo, this._web, sessionFormer);
+        const monkeyId = socket.handshake.query.id;
+        this.monkeys.push(monkeyId);
+        new Monkey_1.Monkey(socket, this._repo, this._web, sessionFormer);
+    }
+    get MonkeysIds() {
+        return this.monkeys.join();
+    }
+    get Count() {
+        return this.monkeys.length;
     }
 };
 MonkeysFactory = __decorate([

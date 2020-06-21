@@ -31,6 +31,7 @@ const MonkeysRepo_1 = require("./Persistance/MonkeysRepo");
 const Database_1 = require("./Persistance/Database");
 const WebClients_1 = require("./WebClients");
 const GhostMonkeySocket_1 = require("./GhostMonkeySocket");
+const HelpBuilder_1 = require("./HelpBuilder");
 let Main = class Main {
     constructor(_db, _usersRepo, _sessionsRepo, _monkeysFactory, _webClients) {
         this._db = _db;
@@ -42,7 +43,7 @@ let Main = class Main {
     get ClientDir() {
         const s = __dirname.split(path.sep);
         const dir = [s.slice(0, s.length - 2).join(path.sep), 'client'].join(path.sep);
-        console.log('Static files @', dir);
+        // console.log('Static files @', dir);
         return dir;
     }
     Start() {
@@ -90,12 +91,15 @@ let Main = class Main {
             // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey3", 1000, 200));
             server.get('/favicon.ico', (req, res) => res.status(204));
             server.get('/', (req, res) => {
-                const msg = `
-            <b>/index.html</b> - simple web client; prints monkeys sensors state (only one change at a time)<br><br>
-            <b>/group/:groupName</b> - monkeys from a given group<br>
-            <b>/:monkeyId/total</b> - returns MonkeySummary of monkey<br>
-            <b>/:monkeyId/last/:days</b> - returns last {days} of MonkeyDay`;
-                res.send(msg);
+                const hb = new HelpBuilder_1.HelpBuilder("MonkeyChallenge.Server")
+                    .Status("Drivers connected", () => this._monkeysFactory.Count.toString() + " (" + this._monkeysFactory.MonkeysIds + ")")
+                    .Status("Web clients connected", () => this._webClients.List.length.toString())
+                    .Config("Static files", this.ClientDir, "app dir", "C:\\Projects\\App\\client", "code")
+                    .Api("/index.html", "Simple web client; prints monkeys sensors state (only one change at a time)")
+                    .Api("/group/:name", "Get monkeys from a given group")
+                    .Api("/:monkeyId/total", "Returns MonkeySummary of monkey")
+                    .Api("/:monkeyId/last/:days", "Rturns last {days} of MonkeyDay");
+                res.send(hb.ToString());
             });
             server.get('/ping', (req, res) => res.send('pong'));
             server.get('/:monkeyId/last/:days', (req, res) => __awaiter(this, void 0, void 0, function* () {

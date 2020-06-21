@@ -12,6 +12,7 @@ import { MonkeysRepo } from "./Persistance/MonkeysRepo";
 import { Database } from "./Persistance/Database";
 import { WebClients } from './WebClients';
 import { GhostMonkeySocket } from "./GhostMonkeySocket";
+import { HelpBuilder } from "./HelpBuilder";
 
 @injectable()
 export class Main
@@ -29,7 +30,7 @@ export class Main
     {
         const s = __dirname.split(path.sep);
         const dir = [s.slice(0, s.length - 2).join(path.sep), 'client'].join(path.sep);
-        console.log('Static files @', dir);
+        // console.log('Static files @', dir);
         return dir;
     }
 
@@ -93,12 +94,16 @@ export class Main
         server.get('/favicon.ico', (req, res) => res.status(204));
         server.get('/', (req, res) =>
         {
-            const msg = `
-            <b>/index.html</b> - simple web client; prints monkeys sensors state (only one change at a time)<br><br>
-            <b>/group/:groupName</b> - monkeys from a given group<br>
-            <b>/:monkeyId/total</b> - returns MonkeySummary of monkey<br>
-            <b>/:monkeyId/last/:days</b> - returns last {days} of MonkeyDay`;
-            res.send(msg);
+            const hb = new HelpBuilder("MonkeyChallenge.Server")
+                .Status("Drivers connected", ()=> this._monkeysFactory.Count.toString() + " (" + this._monkeysFactory.MonkeysIds + ")")
+                .Status("Web clients connected", ()=>this._webClients.List.length.toString())
+                .Config("Static files", this.ClientDir, "app dir", "C:\\Projects\\App\\client", "code")
+                .Api("/index.html", "Simple web client; prints monkeys sensors state (only one change at a time)")
+                .Api("/group/:name", "Get monkeys from a given group")
+                .Api("/:monkeyId/total", "Returns MonkeySummary of monkey")
+                .Api("/:monkeyId/last/:days", "Rturns last {days} of MonkeyDay");
+
+            res.send(hb.ToString());
         });
         server.get('/ping', (req, res) => res.send('pong'));
         server.get('/:monkeyId/last/:days', async (req, res) =>
