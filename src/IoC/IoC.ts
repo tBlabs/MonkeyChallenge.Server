@@ -9,6 +9,8 @@ import { RunMode } from '../Services/RunMode/RunMode';
 import { ILogger } from '../Services/Logger/ILogger';
 import { Logger } from '../Services/Logger/Logger';
 import { Main } from '../Main';
+import {Host} from "../Host";
+import {HostConfig} from "../HostConfig";
 import { IStartupArgs } from '../Services/Environment/IStartupArgs';
 import { StartupArgs } from '../Services/Environment/StartupArgs';
 import { MonkeysFactory } from "../Monkey/MonkeysFactory";
@@ -34,6 +36,8 @@ try
     IoC.bind(MonkeysFactory).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind<Main>(Main).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind<WebClients>(WebClients).toSelf().inSingletonScope().whenTargetIsDefault();
+    IoC.bind<Host>(Host).toSelf().inSingletonScope().whenTargetIsDefault();
+    IoC.bind<HostConfig>(HostConfig).toSelf().inSingletonScope().whenTargetIsDefault();
 }
 catch (ex)
 {

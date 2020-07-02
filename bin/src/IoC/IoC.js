@@ -8,6 +8,8 @@ const Environment_1 = require("../Services/Environment/Environment");
 const RunMode_1 = require("../Services/RunMode/RunMode");
 const Logger_1 = require("../Services/Logger/Logger");
 const Main_1 = require("../Main");
+const Host_1 = require("../Host");
+const HostConfig_1 = require("../HostConfig");
 const StartupArgs_1 = require("../Services/Environment/StartupArgs");
 const MonkeysFactory_1 = require("../Monkey/MonkeysFactory");
 const Repository_1 = require("./../Persistance/Repository");
@@ -30,6 +32,8 @@ try {
     IoC.bind(MonkeysFactory_1.MonkeysFactory).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(Main_1.Main).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(WebClients_1.WebClients).toSelf().inSingletonScope().whenTargetIsDefault();
+    IoC.bind(Host_1.Host).toSelf().inSingletonScope().whenTargetIsDefault();
+    IoC.bind(HostConfig_1.HostConfig).toSelf().inSingletonScope().whenTargetIsDefault();
 }
 catch (ex) {
     console.log('IoC exception:', ex);
