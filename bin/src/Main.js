@@ -24,11 +24,10 @@ const Repository_1 = require("./Persistance/Repository");
 const MonkeyEntity_1 = require("./Persistance/Entities/MonkeyEntity");
 const MonkeysRepo_1 = require("./Persistance/MonkeysRepo");
 const Database_1 = require("./Persistance/Database");
-const WebClients_1 = require("./WebClients");
-const GhostMonkeySocket_1 = require("./GhostMonkeySocket");
-const HelpBuilder_1 = require("./HelpBuilder");
-const MonkeysPictures_1 = require("./MonkeysPictures");
-const Host_1 = require("./Host");
+const WebClients_1 = require("./Services/WebClients");
+const HelpBuilder_1 = require("./Services/HelpBuilder");
+const MonkeysPictures_1 = require("./ForTesting/MonkeysPictures");
+const Host_1 = require("./Services/Host");
 let Main = class Main {
     constructor(_host, _db, _usersRepo, _sessionsRepo, _monkeysFactory, _webClients) {
         this._host = _host;
@@ -65,35 +64,29 @@ let Main = class Main {
                 // console.log('rrrrrrrr', r.map(x => JSON.stringify(x)));
                 //return
             }
-            // const server = express();
-            // server.use(cors());
-            // const httpServer = http.createServer(server);
-            // const socketHost = socketIo(httpServer);
             const webClients = this._host.SocketHost.of('/web');
-            const driverClients = this._host.SocketHost.of('/monkey');
+            const drivers = this._host.SocketHost.of('/monkey');
             webClients.on('connection', (socket) => {
                 console.log('web connection @', socket.id);
                 this._webClients.Add(socket);
             });
-            driverClients.on('connection', (socket) => {
+            drivers.on('connection', (socket) => {
                 this._monkeysFactory.Create(socket);
             });
-            this._monkeysFactory.Create(new GhostMonkeySocket_1.GhostMonkeySocket("GhostMonkey1", 3000, 600));
-            this._monkeysFactory.Create(new GhostMonkeySocket_1.GhostMonkeySocket("GhostMonkey2", 5000, 1000));
-            this._monkeysFactory.Create(new GhostMonkeySocket_1.GhostMonkeySocket("GhostMonkey3", 1000, 200));
-            this._host.OnGet('/favicon.ico', (req, res) => res.status(204));
+            // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey1", 3000, 600));
+            // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey2", 5000, 1000));
+            // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey3", 1000, 200));
             this._host.OnGet('/', (req, res) => {
                 const hb = new HelpBuilder_1.HelpBuilder("MonkeyChallenge.Server")
-                    .Status("Drivers connected", () => this._monkeysFactory.Count.toString() + " (" + this._monkeysFactory.MonkeysIds + ")")
+                    .Status("Drivers connected", () => this._monkeysFactory.Count.toString() + " (" + (this._monkeysFactory.MonkeysIds.length > 0 ? this._monkeysFactory.MonkeysIds : "none") + ")")
                     .Status("Web clients connected", () => this._webClients.List.length.toString())
                     .Config("Static files", this._host.ClientDir, "app dir", "C:\\Projects\\App\\client", "code")
                     .Api("/public/index.html", "Simple web client; prints monkeys sensors state (only one change at a time)")
                     .Api("/group/:name", "Get monkeys from a given group")
                     .Api("/:monkeyId/total", "Returns MonkeySummary of monkey")
-                    .Api("/:monkeyId/last/:days", "Rturns last {days} of MonkeyDay");
+                    .Api("/:monkeyId/last/:days", "Returns last {days} of MonkeyDay");
                 res.send(hb.ToString());
             });
-            //  server.get('/ping', (req, res) => res.send('pong'));
             this._host.OnGet('/:monkeyId/last/:days', (req, res) => __awaiter(this, void 0, void 0, function* () {
                 const monkeyId = req.params.monkeyId;
                 const days = +req.params.days;
@@ -110,13 +103,7 @@ let Main = class Main {
                 const result = yield this._usersRepo.GetByGroup(req.params.name);
                 res.send(result);
             }));
-            // server.use('/', express.static(this.ClientDir));
-            //  httpServer.listen(process.env.PORT, () => console.log('MONKEY CHALLENGE SERVER STARTED @ ' + process.env.PORT));
             this._host.Start();
-            // process.on('SIGINT', () =>
-            // {
-            //     httpServer.close(() => console.log('SERVER CLOSED'));
-            // });
         });
     }
 };

@@ -33,7 +33,7 @@ let SessionRepository = class SessionRepository {
         this._date = _date;
     }
     Init() {
-        this.sessionsCollection = this._db.Collection("sessions");
+        // this.sessionsCollection = this._db.Collection("sessions");
         this.totalsCollection = this._db.Collection("totals");
         this.dailyTotalsCollection = this._db.Collection("dailyTotals");
     }
@@ -59,7 +59,7 @@ let SessionRepository = class SessionRepository {
             const query = { MonkeyId: monkeyId, Date: { "$gte": range.from, "$lte": range.to } };
             // console.log('QUERY', JSON.stringify(query));
             let totals = yield this.dailyTotalsCollection.find(query).toArray();
-            return totals.map(x => new MonkeyDailyTotalEntity_1.MonkeyDailyTotalEntity(monkeyId, x.Date, x.SessionsCount, x.TotalPushups, x.SessionsCount));
+            return totals.map(x => new MonkeyDailyTotalEntity_1.MonkeyDailyTotalEntity(monkeyId, x.Date, x.SessionsCount, x.TotalPullups, x.SessionsCount));
         });
     }
     GetMonkeyTotal(monkeyId) {
@@ -74,7 +74,7 @@ let SessionRepository = class SessionRepository {
     Drop() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield this.sessionsCollection.drop();
+                // await this.sessionsCollection.drop();
                 yield this.dailyTotalsCollection.drop();
                 yield this.totalsCollection.drop();
             }
@@ -85,8 +85,7 @@ let SessionRepository = class SessionRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const session = new SessionEntity_1.SessionEntity(id, this._date.Now, duration, count);
             try {
-                if (0)
-                    yield this.sessionsCollection.insertOne(session);
+                // if (0) await this.sessionsCollection.insertOne(session);
                 yield this.UpdateDailyTotal(session);
                 yield this.UpdateTotal(session);
             }
@@ -100,12 +99,12 @@ let SessionRepository = class SessionRepository {
             const searchObj = { MonkeyId: session.MonkeyId };
             let summary = yield this.totalsCollection.findOne(searchObj);
             if (summary == null) {
-                summary = new MonkeyTotalEntity_1.MonkeyTotalEntity(session.MonkeyId, session.Duration, session.Pushups, 1);
+                summary = new MonkeyTotalEntity_1.MonkeyTotalEntity(session.MonkeyId, session.Duration, session.Pullups, 1);
                 yield this.totalsCollection.insertOne(summary);
             }
             else {
                 summary.TotalDuration += session.Duration;
-                summary.TotalPushups += session.Pushups;
+                summary.TotalPullups += session.Pullups;
                 summary.SessionsCount += 1;
                 //console.log('T', summary);
                 yield this.totalsCollection.replaceOne(searchObj, summary);
@@ -121,12 +120,12 @@ let SessionRepository = class SessionRepository {
             const searchObj = { MonkeyId: session.MonkeyId, Date: session.Date };
             let total = yield this.dailyTotalsCollection.findOne(searchObj);
             if (total == null) {
-                total = new MonkeyDailyTotalEntity_1.MonkeyDailyTotalEntity(session.MonkeyId, session.Date, session.Duration, session.Pushups, 1);
+                total = new MonkeyDailyTotalEntity_1.MonkeyDailyTotalEntity(session.MonkeyId, session.Date, session.Duration, session.Pullups, 1);
                 yield this.dailyTotalsCollection.insertOne(total);
             }
             else {
                 total.TotalDuration += session.Duration;
-                total.TotalPushups += session.Pushups;
+                total.TotalPullups += session.Pullups;
                 total.SessionsCount += 1;
                 yield this.dailyTotalsCollection.replaceOne(searchObj, total);
             }

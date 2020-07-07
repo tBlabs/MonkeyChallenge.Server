@@ -6,6 +6,6 @@ export class SessionEntity
         public MonkeyId: MonkeyId,
         public Date: Date,
         public Duration: number,
-        public Pushups: number)
+        public Pullups: number)
     { }
 }

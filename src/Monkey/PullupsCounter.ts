@@ -1,4 +1,4 @@
-export class PushupsCounter
+export class PullupsCounter
 {
     private count = 0;
     private previousState = 0;

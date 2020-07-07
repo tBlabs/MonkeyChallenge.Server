@@ -17,12 +17,12 @@ export class SessionRepository
 
     public Init()
     {
-        this.sessionsCollection = this._db.Collection("sessions");
+        // this.sessionsCollection = this._db.Collection("sessions");
         this.totalsCollection = this._db.Collection("totals");
         this.dailyTotalsCollection = this._db.Collection("dailyTotals");
     }
 
-    private sessionsCollection;
+    // private sessionsCollection;
     private dailyTotalsCollection;
     private totalsCollection;
 
@@ -51,7 +51,7 @@ export class SessionRepository
 
         // console.log('QUERY', JSON.stringify(query));
         let totals: MonkeyDailyTotalEntity[] = await this.dailyTotalsCollection.find(query).toArray();
-        return totals.map(x => new MonkeyDailyTotalEntity(monkeyId, x.Date, x.SessionsCount, x.TotalPushups, x.SessionsCount));
+        return totals.map(x => new MonkeyDailyTotalEntity(monkeyId, x.Date, x.SessionsCount, x.TotalPullups, x.SessionsCount));
     }
 
     public async GetMonkeyTotal(monkeyId: MonkeyId): Promise<MonkeyTotalEntity>
@@ -68,7 +68,7 @@ export class SessionRepository
     {
         try
         {
-            await this.sessionsCollection.drop();
+            // await this.sessionsCollection.drop();
             await this.dailyTotalsCollection.drop();
             await this.totalsCollection.drop();
         }
@@ -82,7 +82,7 @@ export class SessionRepository
 
         try
         {
-            if (0) await this.sessionsCollection.insertOne(session);
+            // if (0) await this.sessionsCollection.insertOne(session);
             await this.UpdateDailyTotal(session);
             await this.UpdateTotal(session);
         } 
@@ -99,13 +99,13 @@ export class SessionRepository
         let summary: MonkeyTotalEntity = await this.totalsCollection.findOne(searchObj);
         if (summary == null)
         {
-            summary = new MonkeyTotalEntity(session.MonkeyId, session.Duration, session.Pushups, 1);
+            summary = new MonkeyTotalEntity(session.MonkeyId, session.Duration, session.Pullups, 1);
             await this.totalsCollection.insertOne(summary);
         }
         else 
         {
             summary.TotalDuration += session.Duration;
-            summary.TotalPushups += session.Pushups;
+            summary.TotalPullups += session.Pullups;
             summary.SessionsCount += 1;
             //console.log('T', summary);
             await this.totalsCollection.replaceOne(searchObj, summary);
@@ -125,13 +125,13 @@ export class SessionRepository
 
         if (total == null)
         {
-            total = new MonkeyDailyTotalEntity(session.MonkeyId, session.Date, session.Duration, session.Pushups, 1);
+            total = new MonkeyDailyTotalEntity(session.MonkeyId, session.Date, session.Duration, session.Pullups, 1);
             await this.dailyTotalsCollection.insertOne(total);
         }
         else 
         {
             total.TotalDuration += session.Duration;
-            total.TotalPushups += session.Pushups;
+            total.TotalPullups += session.Pullups;
             total.SessionsCount += 1;
             await this.dailyTotalsCollection.replaceOne(searchObj, total);
         }

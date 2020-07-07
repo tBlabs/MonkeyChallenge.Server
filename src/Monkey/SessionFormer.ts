@@ -1,11 +1,11 @@
-import { PushupsCounter } from './PushupsCounter';
+import { PullupsCounter } from './PullupsCounter';
 import { MonkeyState } from './MonkeyState';
 import { HangingDetector } from './HangingDetector';
 
 export class SessionFormer
 {
     constructor(
-        private _pushupsCounter: PushupsCounter,
+        private _pullupsCounter: PullupsCounter,
         private _hangingDetector: HangingDetector)
     { }
 
@@ -18,7 +18,7 @@ export class SessionFormer
 
         if (sensorId === "SensorB" && (!this._hangingDetector.IsCompleted))
         {
-            this._pushupsCounter.Update(value);
+            this._pullupsCounter.Update(value);
         }
 
         if (sensorId === "SensorA")
@@ -31,13 +31,13 @@ export class SessionFormer
                 if (this._hangingDetector.Duration < 5000)
                 {
                     console.log(`Session was too short to be saved. Took only ${this._hangingDetector.Duration} ms.`);
-                    this._pushupsCounter.Reset();
+                    this._pullupsCounter.Reset();
                     return;
                 }
 
-                sessionReadyCallback(this._hangingDetector.Duration, this._pushupsCounter.Count);
+                sessionReadyCallback(this._hangingDetector.Duration, this._pullupsCounter.Count);
 
-                this._pushupsCounter.Reset();
+                this._pullupsCounter.Reset();
             }
         }
     }

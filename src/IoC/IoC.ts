@@ -9,15 +9,15 @@ import { RunMode } from '../Services/RunMode/RunMode';
 import { ILogger } from '../Services/Logger/ILogger';
 import { Logger } from '../Services/Logger/Logger';
 import { Main } from '../Main';
-import {Host} from "../Host";
-import {HostConfig} from "../HostConfig";
+import { Host } from "../Services/Host";
+import { HostConfig } from "../Services/HostConfig";
 import { IStartupArgs } from '../Services/Environment/IStartupArgs';
 import { StartupArgs } from '../Services/Environment/StartupArgs';
 import { MonkeysFactory } from "../Monkey/MonkeysFactory";
 import { SessionRepository } from './../Persistance/Repository';
 import { MonkeysRepo } from "./../Persistance/MonkeysRepo";
 import { Database } from "./../Persistance/Database";
-import { WebClients } from './../WebClients';
+import { WebClients } from '../Services/WebClients';
 import { IDateTimeProvider, DateTimeProvider } from './../Services/DateTimeProvider/DateTimeProvider';
 
 const IoC = new Container();
@@ -30,7 +30,6 @@ try
     IoC.bind<IDateTimeProvider>(Types.IDateTimeProvider).to(DateTimeProvider).inSingletonScope().whenTargetIsDefault();
     IoC.bind<IStartupArgs>(Types.IStartupArgs).to(StartupArgs).inSingletonScope().whenTargetIsDefault();
     IoC.bind(Database).toSelf().inSingletonScope().whenTargetIsDefault();
-    // IoC.bind(Types.IDatabase).to(Database).inSingletonScope().whenTargetIsDefault();
     IoC.bind(MonkeysRepo).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(SessionRepository).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(MonkeysFactory).toSelf().inSingletonScope().whenTargetIsDefault();

@@ -12,9 +12,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const WebClients_1 = require("../WebClients");
+const WebClients_1 = require("../Services/WebClients");
 const DateTimeProvider_1 = require("../Services/DateTimeProvider/DateTimeProvider");
-const PushupsCounter_1 = require("./PushupsCounter");
+const PullupsCounter_1 = require("./PullupsCounter");
 const inversify_1 = require("inversify");
 const Repository_1 = require("../Persistance/Repository");
 const SessionFormer_1 = require("./SessionFormer");
@@ -26,22 +26,26 @@ let MonkeysFactory = class MonkeysFactory {
         this._repo = _repo;
         this._web = _web;
         this._date = _date;
-        this.monkeys = [];
-        this.count = 0;
+        this.monkeysIds = [];
     }
     Create(socket) {
-        const pushupsCounter = new PushupsCounter_1.PushupsCounter();
+        const pullupsCounter = new PullupsCounter_1.PullupsCounter();
         const hangingDetector = new HangingDetector_1.HangingDetector(new DateTimeProvider_1.DateTimeProvider());
-        const sessionFormer = new SessionFormer_1.SessionFormer(pushupsCounter, hangingDetector);
+        const sessionFormer = new SessionFormer_1.SessionFormer(pullupsCounter, hangingDetector);
         const monkeyId = socket.handshake.query.id;
-        this.monkeys.push(monkeyId);
+        this.monkeysIds.push(monkeyId);
+        socket.on('disconnect', () => {
+            console.log(`${monkeyId} disconnected`);
+            const mInd = this.MonkeysIds.indexOf(monkeyId);
+            this.monkeysIds.splice(mInd, 1);
+        });
         new Monkey_1.Monkey(socket, this._repo, this._web, sessionFormer);
     }
     get MonkeysIds() {
-        return this.monkeys.join();
+        return this.monkeysIds.join();
     }
     get Count() {
-        return this.monkeys.length;
+        return this.monkeysIds.length;
     }
 };
 MonkeysFactory = __decorate([

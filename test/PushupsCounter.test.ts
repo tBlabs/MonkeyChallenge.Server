@@ -1,8 +1,8 @@
-import { PushupsCounter } from "../src/Monkey/PushupsCounter";
+import { PullupsCounter } from "../src/Monkey/PullupsCounter";
 
-test('PushupsCounter should count pushaps', () =>
+test('PullupsCounter should count pullups', () =>
 {
-    const counter = new PushupsCounter();
+    const counter = new PullupsCounter();
 
     counter.Update(1);
     expect(counter.Count).toBe(0);

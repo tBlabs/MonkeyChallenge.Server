@@ -6,7 +6,7 @@ export class MonkeyDailyTotalEntity
         public MonkeyId: MonkeyId,
         public Date: Date,
         public TotalDuration: number,
-        public TotalPushups: number,
+        public TotalPullups: number,
         public SessionsCount: number)
     { }
 }

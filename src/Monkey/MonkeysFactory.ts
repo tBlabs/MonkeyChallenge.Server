@@ -1,44 +1,50 @@
-import { WebClients } from '../WebClients';
-import { DateTimeProvider } from '../Services/DateTimeProvider/DateTimeProvider';
-import { PushupsCounter } from './PushupsCounter';
-import { injectable, inject } from 'inversify';
-import { SessionRepository } from '../Persistance/Repository';
-import { SessionFormer } from './SessionFormer';
-import { Monkey } from './Monkey';
-import { HangingDetector } from './HangingDetector';
-import { Types } from '../IoC/Types';
+import {WebClients} from '../Services/WebClients';
+import {DateTimeProvider} from '../Services/DateTimeProvider/DateTimeProvider';
+import {PullupsCounter} from './PullupsCounter';
+import {injectable, inject} from 'inversify';
+import {SessionRepository} from '../Persistance/Repository';
+import {SessionFormer} from './SessionFormer';
+import {Monkey} from './Monkey';
+import {HangingDetector} from './HangingDetector';
+import {Types} from '../IoC/Types';
 
 @injectable()
 export class MonkeysFactory
 {
-    private monkeys: string[] = [];
-   
+    private monkeysIds: string[] = [];
 
     constructor(private _repo: SessionRepository,
         private _web: WebClients,
-        @inject(Types.IDateTimeProvider) private _date: DateTimeProvider) { }
-
-    private count = 0;
+        @inject(Types.IDateTimeProvider) private _date: DateTimeProvider)
+    {}
 
     public Create(socket)
     {
-        const pushupsCounter = new PushupsCounter();
+        const pullupsCounter = new PullupsCounter();
         const hangingDetector = new HangingDetector(new DateTimeProvider());
-        const sessionFormer = new SessionFormer(pushupsCounter, hangingDetector);
+        const sessionFormer = new SessionFormer(pullupsCounter, hangingDetector);
 
         const monkeyId = socket.handshake.query.id;
-        this.monkeys.push(monkeyId);
-        
+        this.monkeysIds.push(monkeyId);
+
+        socket.on('disconnect', () =>
+        {
+            console.log(`${monkeyId} disconnected`);
+
+            const mInd = this.MonkeysIds.indexOf(monkeyId);
+            this.monkeysIds.splice(mInd, 1);
+        });
+
         new Monkey(socket, this._repo, this._web, sessionFormer);
     }
 
     public get MonkeysIds(): string
     {
-        return this.monkeys.join();
+        return this.monkeysIds.join();
     }
 
     public get Count()
     {
-        return this.monkeys.length;
+        return this.monkeysIds.length;
     }
 }

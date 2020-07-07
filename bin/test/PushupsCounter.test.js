@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const PushupsCounter_1 = require("../src/Monkey/PushupsCounter");
-test('PushupsCounter should count pushaps', () => {
-    const counter = new PushupsCounter_1.PushupsCounter();
+const PullupsCounter_1 = require("../src/Monkey/PullupsCounter");
+test('PullupsCounter should count pullups', () => {
+    const counter = new PullupsCounter_1.PullupsCounter();
     counter.Update(1);
     expect(counter.Count).toBe(0);
     counter.Update(0);

@@ -8,14 +8,11 @@ class Monkey {
         this._sessionFormer = _sessionFormer;
         const monkeyId = socket.handshake.query.id;
         console.log(`Monkey ${monkeyId} connected @ ${socket.id}`);
-        socket.on('disconnect', () => {
-            console.log(`${monkeyId} disconnected`);
-        });
         socket.on('update', update => {
             // console.log(monkeyId, update);       
             _web.SendMonkeyUpdate(monkeyId, update);
             _sessionFormer.Form(update, (duration, count) => {
-                // console.log(`${monkeyId} did ${count} pushups in ${duration}ms`);
+                // console.log(`${monkeyId} did ${count} pullups in ${duration}ms`);
                 // if (0)
                 _repo.AddSession(monkeyId, duration, count);
             });

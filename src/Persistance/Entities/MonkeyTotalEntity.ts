@@ -5,7 +5,7 @@ export class MonkeyTotalEntity
     constructor(
         public MonkeyId: MonkeyId,
         public TotalDuration: number,
-        public TotalPushups: number,
+        public TotalPullups: number,
         public SessionsCount: number)
     { }
 
