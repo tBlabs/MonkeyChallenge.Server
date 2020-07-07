@@ -21,6 +21,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("reflect-metadata");
 const MonkeyTotalEntity_1 = require("./Entities/MonkeyTotalEntity");
 const MonkeyDailyTotalEntity_1 = require("./Entities/MonkeyDailyTotalEntity");
 const SessionEntity_1 = require("./Entities/SessionEntity");
@@ -59,7 +60,7 @@ let SessionRepository = class SessionRepository {
             const query = { MonkeyId: monkeyId, Date: { "$gte": range.from, "$lte": range.to } };
             // console.log('QUERY', JSON.stringify(query));
             let totals = yield this.dailyTotalsCollection.find(query).toArray();
-            return totals.map(x => new MonkeyDailyTotalEntity_1.MonkeyDailyTotalEntity(monkeyId, x.Date, x.SessionsCount, x.TotalPullups, x.SessionsCount));
+            return totals.map(x => new MonkeyDailyTotalEntity_1.MonkeyDailyTotalEntity(monkeyId, x.Date, x.TotalDuration, x.TotalPullups, x.SessionsCount));
         });
     }
     GetMonkeyTotal(monkeyId) {

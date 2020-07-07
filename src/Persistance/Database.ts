@@ -6,7 +6,7 @@ export class Database
 {
     private client!: MongoClient;
     private db;
-    public async Connect()
+    public async Init()
     {
         try
         {

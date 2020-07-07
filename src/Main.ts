@@ -26,11 +26,11 @@ export class Main
     {
         console.log('start');
 
-        await this._db.Connect();
+        await this._db.Init();
         this._usersRepo.Init();
         this._sessionsRepo.Init();
 
-        //  if (0)
+          if (0)
         {
             await this._usersRepo.Drop();
             await this._usersRepo.Add(new MonkeyEntity("Monkey1", [ "Group1", "Group2" ], Monkey1Picture));

@@ -40,11 +40,10 @@ let Main = class Main {
     Start() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('start');
-            yield this._db.Connect();
+            yield this._db.Init();
             this._usersRepo.Init();
             this._sessionsRepo.Init();
-            //  if (0)
-            {
+            if (0) {
                 yield this._usersRepo.Drop();
                 yield this._usersRepo.Add(new MonkeyEntity_1.MonkeyEntity("Monkey1", ["Group1", "Group2"], MonkeysPictures_1.Monkey1Picture));
                 yield this._usersRepo.Add(new MonkeyEntity_1.MonkeyEntity("GhostMonkey1", ["Group1", "Group3"], MonkeysPictures_1.Monkey2Picture));

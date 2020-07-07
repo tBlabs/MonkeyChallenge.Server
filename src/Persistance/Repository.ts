@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { IDateTimeProvider } from './../Services/DateTimeProvider/DateTimeProvider';
 import { MonkeyTotalEntity } from "./Entities/MonkeyTotalEntity";
 import { MonkeyId } from "./Types/MonkeyId";
@@ -51,7 +52,8 @@ export class SessionRepository
 
         // console.log('QUERY', JSON.stringify(query));
         let totals: MonkeyDailyTotalEntity[] = await this.dailyTotalsCollection.find(query).toArray();
-        return totals.map(x => new MonkeyDailyTotalEntity(monkeyId, x.Date, x.SessionsCount, x.TotalPullups, x.SessionsCount));
+
+        return totals.map(x => new MonkeyDailyTotalEntity(monkeyId, x.Date, x.TotalDuration, x.TotalPullups, x.SessionsCount));
     }
 
     public async GetMonkeyTotal(monkeyId: MonkeyId): Promise<MonkeyTotalEntity>
