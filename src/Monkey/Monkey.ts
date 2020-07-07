@@ -1,6 +1,6 @@
 import { IDateTimeProvider } from './../Services/DateTimeProvider/DateTimeProvider';
 import { WebClients } from '../Services/WebClients';
-import { SessionRepository } from '../Persistance/Repository';
+import { SessionRepository } from '../Persistance/SessionRepository';
 import { SessionEntity } from "../Persistance/Entities/SessionEntity";
 import { SessionFormer } from './SessionFormer';
 import { inject } from 'inversify';

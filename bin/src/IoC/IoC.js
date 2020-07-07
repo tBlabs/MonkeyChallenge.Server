@@ -12,7 +12,7 @@ const Host_1 = require("../Services/Host");
 const HostConfig_1 = require("../Services/HostConfig");
 const StartupArgs_1 = require("../Services/Environment/StartupArgs");
 const MonkeysFactory_1 = require("../Monkey/MonkeysFactory");
-const Repository_1 = require("./../Persistance/Repository");
+const SessionRepository_1 = require("../Persistance/SessionRepository");
 const MonkeysRepo_1 = require("./../Persistance/MonkeysRepo");
 const Database_1 = require("./../Persistance/Database");
 const WebClients_1 = require("../Services/WebClients");
@@ -27,7 +27,7 @@ try {
     IoC.bind(Types_1.Types.IStartupArgs).to(StartupArgs_1.StartupArgs).inSingletonScope().whenTargetIsDefault();
     IoC.bind(Database_1.Database).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(MonkeysRepo_1.MonkeysRepo).toSelf().inSingletonScope().whenTargetIsDefault();
-    IoC.bind(Repository_1.SessionRepository).toSelf().inSingletonScope().whenTargetIsDefault();
+    IoC.bind(SessionRepository_1.SessionRepository).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(MonkeysFactory_1.MonkeysFactory).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(Main_1.Main).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(WebClients_1.WebClients).toSelf().inSingletonScope().whenTargetIsDefault();

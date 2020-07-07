@@ -1,6 +1,6 @@
 import { MonkeysFactory } from "./Monkey/MonkeysFactory";
 import { injectable, inject } from 'inversify';
-import { SessionRepository } from './Persistance/Repository';
+import { SessionRepository } from './Persistance/SessionRepository';
 import { MonkeyEntity } from "./Persistance/Entities/MonkeyEntity";
 import { MonkeysRepo } from "./Persistance/MonkeysRepo";
 import { Database } from "./Persistance/Database";

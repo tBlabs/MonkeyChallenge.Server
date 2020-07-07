@@ -16,7 +16,7 @@ const WebClients_1 = require("../Services/WebClients");
 const DateTimeProvider_1 = require("../Services/DateTimeProvider/DateTimeProvider");
 const PullupsCounter_1 = require("./PullupsCounter");
 const inversify_1 = require("inversify");
-const Repository_1 = require("../Persistance/Repository");
+const SessionRepository_1 = require("../Persistance/SessionRepository");
 const SessionFormer_1 = require("./SessionFormer");
 const Monkey_1 = require("./Monkey");
 const HangingDetector_1 = require("./HangingDetector");
@@ -51,7 +51,7 @@ let MonkeysFactory = class MonkeysFactory {
 MonkeysFactory = __decorate([
     inversify_1.injectable(),
     __param(2, inversify_1.inject(Types_1.Types.IDateTimeProvider)),
-    __metadata("design:paramtypes", [Repository_1.SessionRepository,
+    __metadata("design:paramtypes", [SessionRepository_1.SessionRepository,
         WebClients_1.WebClients,
         DateTimeProvider_1.DateTimeProvider])
 ], MonkeysFactory);

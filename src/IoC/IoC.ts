@@ -14,7 +14,7 @@ import { HostConfig } from "../Services/HostConfig";
 import { IStartupArgs } from '../Services/Environment/IStartupArgs';
 import { StartupArgs } from '../Services/Environment/StartupArgs';
 import { MonkeysFactory } from "../Monkey/MonkeysFactory";
-import { SessionRepository } from './../Persistance/Repository';
+import { SessionRepository } from '../Persistance/SessionRepository';
 import { MonkeysRepo } from "./../Persistance/MonkeysRepo";
 import { Database } from "./../Persistance/Database";
 import { WebClients } from '../Services/WebClients';

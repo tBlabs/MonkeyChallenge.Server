@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { IDateTimeProvider } from './../Services/DateTimeProvider/DateTimeProvider';
+import { IDateTimeProvider } from '../Services/DateTimeProvider/DateTimeProvider';
 import { MonkeyTotalEntity } from "./Entities/MonkeyTotalEntity";
 import { MonkeyId } from "./Types/MonkeyId";
 import { MonkeyDailyTotalEntity } from "./Entities/MonkeyDailyTotalEntity";
@@ -7,6 +7,7 @@ import { SessionEntity } from "./Entities/SessionEntity";
 import { injectable, inject } from 'inversify';
 import { Types } from '../IoC/Types';
 import { Database } from './Database';
+import { Range } from '../Types/Range';
 
 @injectable()
 export class SessionRepository
@@ -27,28 +28,31 @@ export class SessionRepository
     private dailyTotalsCollection;
     private totalsCollection;
 
-    private MinusDays(d: Date, days: number): Date
+    private MinusDays(start: Date, days: number): Date
     {
-        const date = new Date();
-        return new Date(date.setDate(date.getDate() - days));
+        const dateCopy = new Date(start);
+
+        return new Date(dateCopy.setDate(dateCopy.getDate() - days));
     }
 
-    public async GetLastTotals(monkeyId: string, days: number): Promise<MonkeyDailyTotalEntity[]>
+    public async GetLastTotals(monkeyId: MonkeyId, days: number): Promise<MonkeyDailyTotalEntity[]>
     {
         const now = this._date.Now;
         const from: Date = this.MinusDays(now, days);
-        const totals = await this.GetDailyTotals(monkeyId, { from: from, to: now });
+        console.log(from, now);
+        const totals = await this.GetDailyTotals(monkeyId, { From: from, To: now });
+        console.log(totals);
         //   if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
         return totals;
     }
 
-    private async GetDailyTotals(monkeyId: string, range: { from: Date; to: Date; }): Promise<MonkeyDailyTotalEntity[]>
+    private async GetDailyTotals(monkeyId: MonkeyId, range: Range<Date>): Promise<MonkeyDailyTotalEntity[]>
     {
-        range.to.setHours(25);
-        range.to.setMinutes(59);
-        range.to.setSeconds(59);
-        range.to.setMilliseconds(999);
-        const query = { MonkeyId: monkeyId, Date: { "$gte": range.from, "$lte": range.to } };
+        range.To.setHours(25);
+        range.To.setMinutes(59);
+        range.To.setSeconds(59);
+        range.To.setMilliseconds(999);
+        const query = { MonkeyId: monkeyId, Date: { "$gte": range.From, "$lte": range.To } };
 
         // console.log('QUERY', JSON.stringify(query));
         let totals: MonkeyDailyTotalEntity[] = await this.dailyTotalsCollection.find(query).toArray();
@@ -78,7 +82,7 @@ export class SessionRepository
         { }
     }
 
-    public async AddSession(id, duration, count)
+    public async AddSession(id: MonkeyId, duration: number, count: number)
     {
         const session = new SessionEntity(id, this._date.Now, duration, count);
 
@@ -87,7 +91,7 @@ export class SessionRepository
             // if (0) await this.sessionsCollection.insertOne(session);
             await this.UpdateDailyTotal(session);
             await this.UpdateTotal(session);
-        } 
+        }
         catch (error)
         {
             console.log('MONGODB ERROR', error);

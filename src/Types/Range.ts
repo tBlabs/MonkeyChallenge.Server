@@ -1,0 +1,1 @@
+export type Range<T> = { From: T, To: T };

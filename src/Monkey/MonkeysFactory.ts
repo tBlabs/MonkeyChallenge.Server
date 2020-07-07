@@ -2,7 +2,7 @@ import {WebClients} from '../Services/WebClients';
 import {DateTimeProvider} from '../Services/DateTimeProvider/DateTimeProvider';
 import {PullupsCounter} from './PullupsCounter';
 import {injectable, inject} from 'inversify';
-import {SessionRepository} from '../Persistance/Repository';
+import {SessionRepository} from '../Persistance/SessionRepository';
 import {SessionFormer} from './SessionFormer';
 import {Monkey} from './Monkey';
 import {HangingDetector} from './HangingDetector';

@@ -20,7 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const MonkeysFactory_1 = require("./Monkey/MonkeysFactory");
 const inversify_1 = require("inversify");
-const Repository_1 = require("./Persistance/Repository");
+const SessionRepository_1 = require("./Persistance/SessionRepository");
 const MonkeyEntity_1 = require("./Persistance/Entities/MonkeyEntity");
 const MonkeysRepo_1 = require("./Persistance/MonkeysRepo");
 const Database_1 = require("./Persistance/Database");
@@ -111,7 +111,7 @@ Main = __decorate([
     __metadata("design:paramtypes", [Host_1.Host,
         Database_1.Database,
         MonkeysRepo_1.MonkeysRepo,
-        Repository_1.SessionRepository,
+        SessionRepository_1.SessionRepository,
         MonkeysFactory_1.MonkeysFactory,
         WebClients_1.WebClients])
 ], Main);

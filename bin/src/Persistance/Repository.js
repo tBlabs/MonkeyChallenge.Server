@@ -39,25 +39,27 @@ let SessionRepository = class SessionRepository {
         this.dailyTotalsCollection = this._db.Collection("dailyTotals");
     }
     MinusDays(d, days) {
-        const date = new Date();
+        const date = this._date.Now; // durne to jakieś
         return new Date(date.setDate(date.getDate() - days));
     }
     GetLastTotals(monkeyId, days) {
         return __awaiter(this, void 0, void 0, function* () {
             const now = this._date.Now;
             const from = this.MinusDays(now, days);
-            const totals = yield this.GetDailyTotals(monkeyId, { from: from, to: now });
+            console.log(from, now);
+            const totals = yield this.GetDailyTotals(monkeyId, { From: from, To: now });
+            console.log(totals);
             //   if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
             return totals;
         });
     }
     GetDailyTotals(monkeyId, range) {
         return __awaiter(this, void 0, void 0, function* () {
-            range.to.setHours(25);
-            range.to.setMinutes(59);
-            range.to.setSeconds(59);
-            range.to.setMilliseconds(999);
-            const query = { MonkeyId: monkeyId, Date: { "$gte": range.from, "$lte": range.to } };
+            range.To.setHours(25);
+            range.To.setMinutes(59);
+            range.To.setSeconds(59);
+            range.To.setMilliseconds(999);
+            const query = { MonkeyId: monkeyId, Date: { "$gte": range.From, "$lte": range.To } };
             // console.log('QUERY', JSON.stringify(query));
             let totals = yield this.dailyTotalsCollection.find(query).toArray();
             return totals.map(x => new MonkeyDailyTotalEntity_1.MonkeyDailyTotalEntity(monkeyId, x.Date, x.TotalDuration, x.TotalPullups, x.SessionsCount));
