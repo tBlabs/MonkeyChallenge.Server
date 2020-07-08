@@ -28,7 +28,6 @@ const WebClients_1 = require("./Services/WebClients");
 const HelpBuilder_1 = require("./Services/HelpBuilder");
 const MonkeysPictures_1 = require("./ForTesting/MonkeysPictures");
 const Host_1 = require("./Services/Host");
-const SessionEntity_1 = require("./Persistance/Entities/SessionEntity");
 let Main = class Main {
     constructor(_host, _db, _usersRepo, _sessionsRepo, _monkeysFactory, _webClients) {
         this._host = _host;
@@ -44,7 +43,6 @@ let Main = class Main {
             yield this._db.Init();
             this._usersRepo.Init();
             yield this._sessionsRepo.Init();
-            this._sessionsRepo.AddSession(new SessionEntity_1.SessionEntity("aaa", new Date(), 3, 4));
             if (0) {
                 yield this._usersRepo.Drop();
                 yield this._usersRepo.Add(new MonkeyEntity_1.MonkeyEntity("Monkey1", ["Group1", "Group2"], MonkeysPictures_1.Monkey1Picture));

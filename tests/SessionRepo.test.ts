@@ -98,4 +98,20 @@ describe(SessionRepository.name, () =>
         expect(result[1].Date).toEqual(new Date(2000, 0, 14, 2, 0, 0));
         expect(result[2].Date).toEqual(new Date(2000, 0, 13, 2, 0, 0));
     });
+    
+    it('should count total from sessions', async () =>
+    {
+        // When
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 15, 12, 0, 0), 1000, 1));
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 14, 12, 10, 0), 2000, 2));
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 13, 12, 20, 0), 3000, 3));
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 12, 12, 30, 0), 4000, 4));
+
+        // Then
+        const result = await sut.GetMonkeyTotal("TestMonkey1");
+
+        expect(result.SessionsCount).toBe(4);
+        expect(result.TotalDuration).toBe(10000);
+        expect(result.TotalPullups).toBe(10);
+    });
 });

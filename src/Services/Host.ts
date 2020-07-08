@@ -34,31 +34,28 @@ export class Host
         });
     }
 
-
     public get ClientDir(): string
     {
         const s = __dirname.split(path.sep);
         const dir = [s.slice(0, s.length - 2).join(path.sep), 'public'].join(path.sep);
-        // console.log('Static files @', dir);
+
         return dir;
     }
-
 
     public Start()
     {
         this.httpServer.listen(this._config.Port, () => console.log('MONKEY-CHALLENGE SERVER STARTED @ ' + this._config.Port));
     }
+    
     public get SocketHost()
     {
         return this.socketHost;
     }
 
-
     public OnGet(url: string, callback: (req: any, res: any) => Promise<void>): void
     {
         this.server.get(url, callback);
     }
-
 
     public OnPost(url: string, callback: (req: any, res: any) => Promise<void>): void
     {

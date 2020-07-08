@@ -40,8 +40,8 @@ try
     IoC.bind<WebClients>(WebClients).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind<Host>(Host).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind<HostConfig>(HostConfig).toSelf().inSingletonScope().whenTargetIsDefault();
-    // IoC.bind<IDatabaseConnectionStringProvider>(Types.IDatabaseConnectionStringProvider).to(ProductionDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
-    IoC.bind<IDatabaseConnectionStringProvider>(Types.IDatabaseConnectionStringProvider).to(TestDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
+    IoC.bind<IDatabaseConnectionStringProvider>(Types.IDatabaseConnectionStringProvider).to(ProductionDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
+    // IoC.bind<IDatabaseConnectionStringProvider>(Types.IDatabaseConnectionStringProvider).to(TestDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
 }
 catch (ex)
 {

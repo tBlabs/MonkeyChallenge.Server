@@ -17,7 +17,7 @@ const MonkeysRepo_1 = require("./../Persistance/MonkeysRepo");
 const Database_1 = require("./../Persistance/Database");
 const WebClients_1 = require("../Services/WebClients");
 const DateTimeProvider_1 = require("./../Services/DateTimeProvider/DateTimeProvider");
-const TestDatabaseConnectionStringProvider_1 = require("../Persistance/TestDatabaseConnectionStringProvider");
+const ProductionDatabaseConnectionStringProvider_1 = require("../Persistance/ProductionDatabaseConnectionStringProvider");
 const IoC = new inversify_1.Container();
 exports.IoC = IoC;
 try {
@@ -34,8 +34,8 @@ try {
     IoC.bind(WebClients_1.WebClients).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(Host_1.Host).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind(HostConfig_1.HostConfig).toSelf().inSingletonScope().whenTargetIsDefault();
-    // IoC.bind<IDatabaseConnectionStringProvider>(Types.IDatabaseConnectionStringProvider).to(ProductionDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
-    IoC.bind(Types_1.Types.IDatabaseConnectionStringProvider).to(TestDatabaseConnectionStringProvider_1.TestDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
+    IoC.bind(Types_1.Types.IDatabaseConnectionStringProvider).to(ProductionDatabaseConnectionStringProvider_1.ProductionDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
+    // IoC.bind<IDatabaseConnectionStringProvider>(Types.IDatabaseConnectionStringProvider).to(TestDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
 }
 catch (ex) {
     console.log('IoC exception:', ex);

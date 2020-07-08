@@ -30,7 +30,6 @@ export class Main
         await this._db.Init();
         this._usersRepo.Init();
         await this._sessionsRepo.Init();
-        this._sessionsRepo.AddSession(new SessionEntity("aaa", new Date(), 3,4));
 
         if (0)
         {
