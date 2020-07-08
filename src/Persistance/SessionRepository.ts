@@ -39,9 +39,9 @@ export class SessionRepository
     {
         const now = this._date.Now;
         const from: Date = this.MinusDays(now, days);
-        console.log(from, now);
+        // console.log(from, now);
         const totals = await this.GetDailyTotals(monkeyId, { From: from, To: now });
-        console.log(totals);
+        // console.log(totals);
         //   if (totals.length > days) throw new Error(`There should be only one entry per day but was more (${totals.length} where max is ${days}).`)
         return totals;
     }
@@ -82,9 +82,10 @@ export class SessionRepository
         { }
     }
 
-    public async AddSession(id: MonkeyId, duration: number, count: number)
+    // public async AddSession(id: MonkeyId, duration: number, count: number)
+    public async AddSession(session: SessionEntity)
     {
-        const session = new SessionEntity(id, this._date.Now, duration, count);
+        // const session = new SessionEntity(id, this._date.Now, duration, count);
 
         try
         {

@@ -30,7 +30,7 @@ let MonkeysFactory = class MonkeysFactory {
     }
     Create(socket) {
         const pullupsCounter = new PullupsCounter_1.PullupsCounter();
-        const hangingDetector = new HangingDetector_1.HangingDetector(new DateTimeProvider_1.DateTimeProvider());
+        const hangingDetector = new HangingDetector_1.HangingDetector(this._date);
         const sessionFormer = new SessionFormer_1.SessionFormer(pullupsCounter, hangingDetector);
         const monkeyId = socket.handshake.query.id;
         this.monkeysIds.push(monkeyId);
@@ -39,7 +39,7 @@ let MonkeysFactory = class MonkeysFactory {
             const mInd = this.MonkeysIds.indexOf(monkeyId);
             this.monkeysIds.splice(mInd, 1);
         });
-        new Monkey_1.Monkey(socket, this._repo, this._web, sessionFormer);
+        new Monkey_1.Monkey(socket, this._repo, this._web, sessionFormer, this._date);
     }
     get MonkeysIds() {
         return this.monkeysIds.join();

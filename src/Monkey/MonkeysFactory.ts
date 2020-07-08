@@ -21,7 +21,7 @@ export class MonkeysFactory
     public Create(socket)
     {
         const pullupsCounter = new PullupsCounter();
-        const hangingDetector = new HangingDetector(new DateTimeProvider());
+        const hangingDetector = new HangingDetector(this._date);
         const sessionFormer = new SessionFormer(pullupsCounter, hangingDetector);
 
         const monkeyId = socket.handshake.query.id;
@@ -35,7 +35,7 @@ export class MonkeysFactory
             this.monkeysIds.splice(mInd, 1);
         });
 
-        new Monkey(socket, this._repo, this._web, sessionFormer);
+        new Monkey(socket, this._repo, this._web, sessionFormer, this._date);
     }
 
     public get MonkeysIds(): string

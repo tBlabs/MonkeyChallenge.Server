@@ -11,7 +11,6 @@ export class MonkeyTotalEntity
 
     public static get Empty()
     {
-        return  new MonkeyTotalEntity("No Total entry for queried monkey", 0, 0, 0);
+        return  new MonkeyTotalEntity("Empty MonkeyTotal entry", 0, 0, 0);
     }
-
 }

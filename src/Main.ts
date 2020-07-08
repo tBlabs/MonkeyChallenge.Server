@@ -30,12 +30,12 @@ export class Main
         this._usersRepo.Init();
         this._sessionsRepo.Init();
 
-          if (0)
+        if (0)
         {
             await this._usersRepo.Drop();
-            await this._usersRepo.Add(new MonkeyEntity("Monkey1", [ "Group1", "Group2" ], Monkey1Picture));
-            await this._usersRepo.Add(new MonkeyEntity("GhostMonkey1", [ "Group1", "Group3" ], Monkey2Picture));
-            await this._usersRepo.Add(new MonkeyEntity("GhostMonkey2", [ "Group2", "Group4" ], Monkey2Picture));
+            await this._usersRepo.Add(new MonkeyEntity("Monkey1", ["Group1", "Group2"], Monkey1Picture));
+            await this._usersRepo.Add(new MonkeyEntity("GhostMonkey1", ["Group1", "Group3"], Monkey2Picture));
+            await this._usersRepo.Add(new MonkeyEntity("GhostMonkey2", ["Group2", "Group4"], Monkey2Picture));
             //  await this._sessionsRepo.Drop();
 
             // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 0, 1), 5000, 1));
@@ -73,17 +73,17 @@ export class Main
         // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey2", 5000, 1000));
         // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey3", 1000, 200));
 
+        const hb = new HelpBuilder("MonkeyChallenge.Server")
+            .Status("Drivers connected", () => this._monkeysFactory.Count.toString() + " (" + (this._monkeysFactory.MonkeysIds.length > 0 ? this._monkeysFactory.MonkeysIds : "none") + ")")
+            .Status("Web clients connected", () => this._webClients.List.length.toString())
+            .Config("Static files", this._host.ClientDir, "app dir", "C:\\Projects\\App\\client", "code")
+            .Api("/public/index.html", "Simple web client; prints monkeys sensors state (only one change at a time)")
+            .Api("/group/:name", "Get monkeys from a given group")
+            .Api("/:monkeyId/total", "Returns MonkeySummary of monkey")
+            .Api("/:monkeyId/last/:days", "Returns last {days} of MonkeyDay");
+
         this._host.OnGet('/', (req, res) =>
         {
-            const hb = new HelpBuilder("MonkeyChallenge.Server")
-                .Status("Drivers connected", () => this._monkeysFactory.Count.toString() + " (" + (this._monkeysFactory.MonkeysIds.length > 0 ? this._monkeysFactory.MonkeysIds : "none") + ")")
-                .Status("Web clients connected", () => this._webClients.List.length.toString())
-                .Config("Static files", this._host.ClientDir, "app dir", "C:\\Projects\\App\\client", "code")
-                .Api("/public/index.html", "Simple web client; prints monkeys sensors state (only one change at a time)")
-                .Api("/group/:name", "Get monkeys from a given group")
-                .Api("/:monkeyId/total", "Returns MonkeySummary of monkey")
-                .Api("/:monkeyId/last/:days", "Returns last {days} of MonkeyDay");
-
             res.send(hb.ToString());
         });
 
