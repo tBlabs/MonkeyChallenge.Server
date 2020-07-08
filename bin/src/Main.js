@@ -83,9 +83,9 @@ let Main = class Main {
                 .Api("/group/:name", "Get monkeys from a given group")
                 .Api("/:monkeyId/total", "Returns MonkeySummary of monkey")
                 .Api("/:monkeyId/last/:days", "Returns last {days} of MonkeyDay");
-            this._host.OnGet('/', (req, res) => {
+            this._host.OnGet('/', (req, res) => __awaiter(this, void 0, void 0, function* () {
                 res.send(hb.ToString());
-            });
+            }));
             this._host.OnGet('/:monkeyId/last/:days', (req, res) => __awaiter(this, void 0, void 0, function* () {
                 const monkeyId = req.params.monkeyId;
                 const days = +req.params.days;

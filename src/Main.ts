@@ -82,7 +82,7 @@ export class Main
             .Api("/:monkeyId/total", "Returns MonkeySummary of monkey")
             .Api("/:monkeyId/last/:days", "Returns last {days} of MonkeyDay");
 
-        this._host.OnGet('/', (req, res) =>
+        this._host.OnGet('/', async (req, res) =>
         {
             res.send(hb.ToString());
         });

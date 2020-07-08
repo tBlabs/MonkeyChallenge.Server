@@ -27,7 +27,7 @@ export class Monkey
 
                 // if (0)
                 // _repo.AddSession(monkeyId, duration, count);
-                _repo.AddSession(new SessionEntity(monkeyId, this._date.Now, duration, count));
+                _repo.AddSession(new SessionEntity(monkeyId, _date.Now, duration, count));
             });
         });
     }

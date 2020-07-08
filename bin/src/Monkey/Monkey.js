@@ -12,7 +12,7 @@ class Monkey {
                 // console.log(`${monkeyId} did ${count} pullups in ${duration}ms`);
                 // if (0)
                 // _repo.AddSession(monkeyId, duration, count);
-                _repo.AddSession(new SessionEntity_1.SessionEntity(monkeyId, this._date.Now, duration, count));
+                _repo.AddSession(new SessionEntity_1.SessionEntity(monkeyId, _date.Now, duration, count));
             });
         });
     }
