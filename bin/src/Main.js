@@ -25,6 +25,7 @@ const MonkeyEntity_1 = require("./Persistance/Entities/MonkeyEntity");
 const MonkeysRepo_1 = require("./Persistance/MonkeysRepo");
 const Database_1 = require("./Persistance/Database");
 const WebClients_1 = require("./Services/WebClients");
+const GhostMonkeySocket_1 = require("./ForTesting/GhostMonkeySocket");
 const HelpBuilder_1 = require("./Services/HelpBuilder");
 const MonkeysPictures_1 = require("./ForTesting/MonkeysPictures");
 const Host_1 = require("./Services/Host");
@@ -58,7 +59,7 @@ let Main = class Main {
             drivers.on('connection', (socket) => {
                 this._monkeysFactory.Create(socket);
             });
-            // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey1", 3000, 600));
+            this._monkeysFactory.Create(new GhostMonkeySocket_1.GhostMonkeySocket("GhostMonkey1", 5000, 800));
             // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey2", 5000, 1000));
             // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey3", 1000, 200));
             const hb = new HelpBuilder_1.HelpBuilder("MonkeyChallenge.Server")

@@ -23,7 +23,7 @@ export class Monkey
 
             _sessionFormer.Form(update, (duration, count) =>
             {
-                // console.log(`${monkeyId} did ${count} pullups in ${duration}ms`);
+                console.log(`${monkeyId} did ${count} pullups in ${duration}ms`);
 
                 // if (0)
                 // _repo.AddSession(monkeyId, duration, count);

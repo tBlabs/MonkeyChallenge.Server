@@ -37,7 +37,7 @@ export class Host
     public get ClientDir(): string
     {
         const s = __dirname.split(path.sep);
-        const dir = [s.slice(0, s.length - 2).join(path.sep), 'public'].join(path.sep);
+        const dir = [s.slice(0, s.length - 3).join(path.sep), 'public'].join(path.sep);
 
         return dir;
     }

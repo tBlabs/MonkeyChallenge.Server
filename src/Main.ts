@@ -39,6 +39,7 @@ export class Main
             await this._usersRepo.Add(new MonkeyEntity("GhostMonkey2", ["Group2", "Group4"], Monkey2Picture));
         }
 
+
         const webClients = this._host.SocketHost.of('/web');
         const drivers = this._host.SocketHost.of('/monkey');
 
@@ -54,7 +55,7 @@ export class Main
             this._monkeysFactory.Create(socket);
         });
 
-        // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey1", 3000, 600));
+        this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey1", 5000, 800));
         // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey2", 5000, 1000));
         // this._monkeysFactory.Create(new GhostMonkeySocket("GhostMonkey3", 1000, 200));
 

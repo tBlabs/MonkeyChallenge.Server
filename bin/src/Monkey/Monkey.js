@@ -9,7 +9,7 @@ class Monkey {
             // console.log(monkeyId, update);       
             _web.SendMonkeyUpdate(monkeyId, update);
             _sessionFormer.Form(update, (duration, count) => {
-                // console.log(`${monkeyId} did ${count} pullups in ${duration}ms`);
+                console.log(`${monkeyId} did ${count} pullups in ${duration}ms`);
                 // if (0)
                 // _repo.AddSession(monkeyId, duration, count);
                 _repo.AddSession(new SessionEntity_1.SessionEntity(monkeyId, _date.Now, duration, count));
