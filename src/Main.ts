@@ -9,6 +9,7 @@ import { GhostMonkeySocket } from "./ForTesting/GhostMonkeySocket";
 import { HelpBuilder } from "./Services/HelpBuilder";
 import { Monkey1Picture, Monkey2Picture } from "./ForTesting/MonkeysPictures";
 import { Host } from "./Services/Host";
+import { SessionEntity } from "./Persistance/Entities/SessionEntity";
 
 @injectable()
 export class Main
@@ -28,7 +29,8 @@ export class Main
 
         await this._db.Init();
         this._usersRepo.Init();
-        this._sessionsRepo.Init();
+        await this._sessionsRepo.Init();
+        this._sessionsRepo.AddSession(new SessionEntity("aaa", new Date(), 3,4));
 
         if (0)
         {
@@ -36,22 +38,6 @@ export class Main
             await this._usersRepo.Add(new MonkeyEntity("Monkey1", ["Group1", "Group2"], Monkey1Picture));
             await this._usersRepo.Add(new MonkeyEntity("GhostMonkey1", ["Group1", "Group3"], Monkey2Picture));
             await this._usersRepo.Add(new MonkeyEntity("GhostMonkey2", ["Group2", "Group4"], Monkey2Picture));
-            //  await this._sessionsRepo.Drop();
-
-            // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 0, 1), 5000, 1));
-            // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 0, 1), 5000, 1));
-            // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 10, 2), 5000, 1));
-            // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 1, 1, 13, 0, 3), 5000, 2));
-            // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 1, 1, 12, 10, 0), 5000, 2));
-            // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 1, 2, 10, 0, 0), 5000, 3));
-            // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 1, 2, 10, 10, 0), 5000, 3));
-            // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(), 5000, 3));
-            // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(), 5000, 3));
-
-            // let r: DailySummary[] = [];
-            // r = await this._sessionsRepo.GetLastTotals("TestMonkey", 7);
-            // console.log('rrrrrrrr', r.map(x => JSON.stringify(x)));
-            //return
         }
 
         const webClients = this._host.SocketHost.of('/web');

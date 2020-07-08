@@ -17,11 +17,11 @@ export class SessionRepository
         @inject(Types.IDateTimeProvider) private _date: IDateTimeProvider)
     { }
 
-    public Init()
+    public async Init()
     {
         // this.sessionsCollection = this._db.Collection("sessions");
-        this.totalsCollection = this._db.Collection("totals");
-        this.dailyTotalsCollection = this._db.Collection("dailyTotals");
+        this.totalsCollection = await this._db.Collection("totals");
+        this.dailyTotalsCollection = await this._db.Collection("dailyTotals");
     }
 
     // private sessionsCollection;

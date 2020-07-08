@@ -1,17 +1,21 @@
+import * as dotenv from 'dotenv';
+dotenv.config(); // Loads variables from '.env' file to process.env
 import { SessionRepository } from "../src/Persistance/SessionRepository";
 import { Database } from "../src/Persistance/Database";
 import { IDateTimeProvider } from "../src/Services/DateTimeProvider/DateTimeProvider";
 import { Mock } from "moq.ts";
 import { SessionEntity } from "../src/Persistance/Entities/SessionEntity";
+import { TestDatabaseConnectionStringProvider } from "../src/Persistance/TestDatabaseConnectionStringProvider";
 
 describe(SessionRepository.name, () =>
 {
-    const db = new Database();
+    let db: Database;
     const dt = new Mock<IDateTimeProvider>();
     let sut: SessionRepository;
-
+    
     beforeAll(async () =>
     {
+        db = new Database(new TestDatabaseConnectionStringProvider());
         await db.Init();
     });
 

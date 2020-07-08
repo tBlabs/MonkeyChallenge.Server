@@ -1,11 +1,11 @@
-import {injectable} from 'inversify';
+import { injectable } from 'inversify';
 import * as express from 'express';
 import * as http from 'http';
 import * as socketIo from 'socket.io';
 import * as path from 'path';
 import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
-import {HostConfig} from "./HostConfig";
+import { HostConfig } from "./HostConfig";
 
 @injectable()
 export class Host
@@ -20,7 +20,7 @@ export class Host
         this.httpServer = http.createServer(this.server);
         this.socketHost = socketIo(this.httpServer);
 
-        this.server.use(cors({exposedHeaders: 'Content-Length'}));
+        this.server.use(cors({ exposedHeaders: 'Content-Length' }));
         this.server.use(bodyParser.json());
 
         this.server.get('/favicon.ico', (req, res) => res.status(204));
@@ -46,7 +46,7 @@ export class Host
 
     public Start()
     {
-        this.httpServer.listen(this._config.Port, () => console.log('SERVER STARTED @ ' + this._config.Port));
+        this.httpServer.listen(this._config.Port, () => console.log('MONKEY-CHALLENGE SERVER STARTED @ ' + this._config.Port));
     }
     public get SocketHost()
     {

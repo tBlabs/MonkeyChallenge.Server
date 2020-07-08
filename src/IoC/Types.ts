@@ -5,5 +5,5 @@ export const Types =
     ILogger: Symbol('ILogger'),
     IRunMode: Symbol('IRunMode'),
     IStartupArgs: Symbol('IStartupArgs'),
-    // IDatabase: Symbol('IDatabase'),
+    IDatabaseConnectionStringProvider: Symbol('IDatabaseConnectionStringProvider'),
 };

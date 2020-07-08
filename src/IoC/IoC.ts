@@ -19,6 +19,9 @@ import { MonkeysRepo } from "./../Persistance/MonkeysRepo";
 import { Database } from "./../Persistance/Database";
 import { WebClients } from '../Services/WebClients';
 import { IDateTimeProvider, DateTimeProvider } from './../Services/DateTimeProvider/DateTimeProvider';
+import { IDatabaseConnectionStringProvider } from '../Persistance/IDatabaseConnectionStringProvider';
+import { ProductionDatabaseConnectionStringProvider } from '../Persistance/ProductionDatabaseConnectionStringProvider';
+import { TestDatabaseConnectionStringProvider } from '../Persistance/TestDatabaseConnectionStringProvider';
 
 const IoC = new Container();
 
@@ -37,6 +40,8 @@ try
     IoC.bind<WebClients>(WebClients).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind<Host>(Host).toSelf().inSingletonScope().whenTargetIsDefault();
     IoC.bind<HostConfig>(HostConfig).toSelf().inSingletonScope().whenTargetIsDefault();
+    // IoC.bind<IDatabaseConnectionStringProvider>(Types.IDatabaseConnectionStringProvider).to(ProductionDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
+    IoC.bind<IDatabaseConnectionStringProvider>(Types.IDatabaseConnectionStringProvider).to(TestDatabaseConnectionStringProvider).inSingletonScope().whenTargetIsDefault();
 }
 catch (ex)
 {

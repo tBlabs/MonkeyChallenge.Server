@@ -6,5 +6,6 @@ exports.Types = {
     ILogger: Symbol('ILogger'),
     IRunMode: Symbol('IRunMode'),
     IStartupArgs: Symbol('IStartupArgs'),
+    IDatabaseConnectionStringProvider: Symbol('IDatabaseConnectionStringProvider'),
 };
 //# sourceMappingURL=Types.js.map

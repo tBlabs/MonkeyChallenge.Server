@@ -28,6 +28,7 @@ const WebClients_1 = require("./Services/WebClients");
 const HelpBuilder_1 = require("./Services/HelpBuilder");
 const MonkeysPictures_1 = require("./ForTesting/MonkeysPictures");
 const Host_1 = require("./Services/Host");
+const SessionEntity_1 = require("./Persistance/Entities/SessionEntity");
 let Main = class Main {
     constructor(_host, _db, _usersRepo, _sessionsRepo, _monkeysFactory, _webClients) {
         this._host = _host;
@@ -42,26 +43,13 @@ let Main = class Main {
             console.log('start');
             yield this._db.Init();
             this._usersRepo.Init();
-            this._sessionsRepo.Init();
+            yield this._sessionsRepo.Init();
+            this._sessionsRepo.AddSession(new SessionEntity_1.SessionEntity("aaa", new Date(), 3, 4));
             if (0) {
                 yield this._usersRepo.Drop();
                 yield this._usersRepo.Add(new MonkeyEntity_1.MonkeyEntity("Monkey1", ["Group1", "Group2"], MonkeysPictures_1.Monkey1Picture));
                 yield this._usersRepo.Add(new MonkeyEntity_1.MonkeyEntity("GhostMonkey1", ["Group1", "Group3"], MonkeysPictures_1.Monkey2Picture));
                 yield this._usersRepo.Add(new MonkeyEntity_1.MonkeyEntity("GhostMonkey2", ["Group2", "Group4"], MonkeysPictures_1.Monkey2Picture));
-                //  await this._sessionsRepo.Drop();
-                // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 0, 1), 5000, 1));
-                // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 0, 1), 5000, 1));
-                // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 0, 1, 12, 10, 2), 5000, 1));
-                // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 1, 1, 13, 0, 3), 5000, 2));
-                // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 1, 1, 12, 10, 0), 5000, 2));
-                // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 1, 2, 10, 0, 0), 5000, 3));
-                // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(2020, 1, 2, 10, 10, 0), 5000, 3));
-                // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(), 5000, 3));
-                // await this._sessionsRepo.AddSession(new Session("TestMonkey", new Date(), 5000, 3));
-                // let r: DailySummary[] = [];
-                // r = await this._sessionsRepo.GetLastTotals("TestMonkey", 7);
-                // console.log('rrrrrrrr', r.map(x => JSON.stringify(x)));
-                //return
             }
             const webClients = this._host.SocketHost.of('/web');
             const drivers = this._host.SocketHost.of('/monkey');
