@@ -38,8 +38,13 @@ export class Database
         //     console.log('Creating ', name);
         //     await this.db.createCollection(name);
         // }
+        try {
+            
+            return await this.db.collection(name);
+        } catch (error) {
+            console.log('EEEEEEEEEEEEEEEee',error);
+        }
 
-        return await this.db.collection(name);
     }
 
     public Close()

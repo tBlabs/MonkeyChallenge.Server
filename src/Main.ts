@@ -28,7 +28,7 @@ export class Main
         console.log('start');
 
         await this._db.Init();
-        this._usersRepo.Init();
+        await this._usersRepo.Init();
         await this._sessionsRepo.Init();
 
         if (0)

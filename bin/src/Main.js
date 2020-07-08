@@ -41,7 +41,7 @@ let Main = class Main {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('start');
             yield this._db.Init();
-            this._usersRepo.Init();
+            yield this._usersRepo.Init();
             yield this._sessionsRepo.Init();
             if (0) {
                 yield this._usersRepo.Drop();
