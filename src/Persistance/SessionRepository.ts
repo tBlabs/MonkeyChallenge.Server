@@ -19,12 +19,12 @@ export class SessionRepository
 
     public async Init()
     {
-        // this.sessionsCollection = this._db.Collection("sessions");
+        this.sessionsCollection = await this._db.Collection("sessions");
         this.totalsCollection = await this._db.Collection("totals");
         this.dailyTotalsCollection = await this._db.Collection("dailyTotals");
     }
 
-    // private sessionsCollection;
+    private sessionsCollection;
     private dailyTotalsCollection;
     private totalsCollection;
 
@@ -74,7 +74,7 @@ export class SessionRepository
     {
         try
         {
-            // await this.sessionsCollection.drop();
+            await this.sessionsCollection.drop();
             await this.dailyTotalsCollection.drop();
             await this.totalsCollection.drop();
         }
@@ -82,25 +82,30 @@ export class SessionRepository
         { }
     }
 
-    // public async AddSession(id: MonkeyId, duration: number, count: number)
+    e=0;
+
     public async AddSession(session: SessionEntity)
     {
-        // const session = new SessionEntity(id, this._date.Now, duration, count);
-
         try
         {
-            // if (0) await this.sessionsCollection.insertOne(session);
+            // if (0) 
+            await this.sessionsCollection.insertOne({session, entryIndex: this.e++});
             await this.UpdateDailyTotal(session);
             await this.UpdateTotal(session);
         }
         catch (error)
         {
-            console.log('MONGODB ERROR', error);
+            console.log('AddSession() MONGODB ERROR', error);
         }
     }
 
     private async UpdateTotal(session: SessionEntity): Promise<void>
     {
+        session.Date.setHours(2); // Nie mam pojęcia czemu trzeba wpisać 2 żeby w bazie była godzina 00
+        session.Date.setMinutes(0);
+        session.Date.setSeconds(0);
+        session.Date.setMilliseconds(0);
+        
         const searchObj = { MonkeyId: session.MonkeyId };
 
         let summary: MonkeyTotalEntity = await this.totalsCollection.findOne(searchObj);
@@ -130,13 +135,18 @@ export class SessionRepository
 
         let total: MonkeyDailyTotalEntity = await this.dailyTotalsCollection.findOne(searchObj);
 
-        if (total == null)
+        if (total === null)
         {
             total = new MonkeyDailyTotalEntity(session.MonkeyId, session.Date, session.Duration, session.Pullups, 1);
             await this.dailyTotalsCollection.insertOne(total);
         }
         else 
         {
+            total.Date.setHours(2);
+            total.Date.setMinutes(0);
+            total.Date.setSeconds(0);
+            total.Date.setMilliseconds(0);
+    
             total.TotalDuration += session.Duration;
             total.TotalPullups += session.Pullups;
             total.SessionsCount += 1;

@@ -10,6 +10,9 @@ import { HelpBuilder } from "./Services/HelpBuilder";
 import { Monkey1Picture, Monkey2Picture } from "./ForTesting/MonkeysPictures";
 import { Host } from "./Services/Host";
 import { SessionEntity } from "./Persistance/Entities/SessionEntity";
+import { MonkeyTotalEntity } from "./Persistance/Entities/MonkeyTotalEntity";
+import { TotalDto } from "./DTO/TotalDto";
+import { MonkeyDailyTotalEntity } from "./Persistance/Entities/MonkeyDailyTotalEntity";
 
 @injectable()
 export class Main
@@ -77,11 +80,11 @@ export class Main
         {
             const monkeyId = req.params.monkeyId;
             const days = +req.params.days;
-            const result = await this._sessionsRepo.GetLastTotals(monkeyId, days);
+            const result: MonkeyDailyTotalEntity[] = await this._sessionsRepo.GetLastTotals(monkeyId, days);
             // console.log('res', result);
-            res.send(result);
+            res.send(result.map(x => new TotalDto(x.Date, x.TotalDuration, x.TotalPullups, x.SessionsCount)));
         });
-
+        
         this._host.OnGet('/:monkeyId/total', async (req, res) =>
         {
             const result = await this._sessionsRepo.GetMonkeyTotal(req.params.monkeyId);

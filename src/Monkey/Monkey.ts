@@ -23,12 +23,32 @@ export class Monkey
 
             _sessionFormer.Form(update, (duration, count) =>
             {
-                console.log(`${monkeyId} did ${count} pullups in ${duration}ms`);
+                console.log(`${monkeyId} did ${count} pullups in ${duration}ms @ ${_date.DateAsString} ${_date.TimeAsString}`);
 
-                // if (0)
-                // _repo.AddSession(monkeyId, duration, count);
-                _repo.AddSession(new SessionEntity(monkeyId, _date.Now, duration, count));
+                if (this.ValidateSession(duration, count))
+                {
+                    _repo.AddSession(new SessionEntity(monkeyId, _date.Now, duration, count));
+                }
             });
         });
+    }
+
+    private ValidateSession(duration, count)
+    {
+        if ((count === 0) && (duration < 3000))
+        {
+            console.log(`Session was too short to save.`);
+
+            return false;
+        }
+
+        if (duration > 5 * 60 * 1000)
+        {
+            console.log(`This session was suspiciously too long (took ${duration}, limit is 5 minutes) and will not be save.`);
+
+            return false;
+        }
+
+        return true;
     }
 }

@@ -3,7 +3,7 @@ export class HelpBuilder
 {
     private glossaries: { key: string; value: string; }[] = [];
     private configs: { key: string; value: string; defaultValue: string; example: string; source: string; }[] = [];
-    private statuses: { key: string; value: string; }[] = [];
+    private statuses: { key: string; callback: () => string; }[] = [];
     private apis: { url: string; purpose: string; }[] = [];
 
     constructor(private appName: string)
@@ -23,9 +23,9 @@ export class HelpBuilder
         return this;
     }
 
-    public Status(key: string, value: () => string): this
+    public Status(key: string, callback: () => string): this
     {
-        this.statuses.push({ key, value: value() });
+        this.statuses.push({ key, callback });
 
         return this;
     }
@@ -37,8 +37,8 @@ export class HelpBuilder
         return this;
     }
 
-    private LineBreak = "<br /><br />";
     private NewLine = "<br />";
+    private LineBreak = this.NewLine + this.NewLine;
 
     private get Glossaries()
     {
@@ -61,7 +61,7 @@ export class HelpBuilder
         if (this.statuses.length === 0) return "";
 
         return `<table><tr><th>Indicator</th><th>Status</th></tr>`
-            + this.statuses.map(s => `<tr><td>${s.key}</td><td>${s.value}</td></tr>`).join('')
+            + this.statuses.map(s => `<tr><td>${s.key}</td><td>${s.callback()}</td></tr>`).join('')
             + `</table>`;
     }
 
@@ -125,7 +125,7 @@ export class HelpBuilder
     {
         return this.Styles
             + '<div>'
-            + this.Header(`Welcom to ${this.appName}`)
+            + this.Header(`${this.appName}`)
             + '<hr>'
             + this.Section("Glossary", this.Glossaries)
             + this.Section("Status", this.Statuses)

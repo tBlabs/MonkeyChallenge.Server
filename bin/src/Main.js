@@ -29,6 +29,7 @@ const GhostMonkeySocket_1 = require("./ForTesting/GhostMonkeySocket");
 const HelpBuilder_1 = require("./Services/HelpBuilder");
 const MonkeysPictures_1 = require("./ForTesting/MonkeysPictures");
 const Host_1 = require("./Services/Host");
+const TotalDto_1 = require("./DTO/TotalDto");
 let Main = class Main {
     constructor(_host, _db, _usersRepo, _sessionsRepo, _monkeysFactory, _webClients) {
         this._host = _host;
@@ -78,7 +79,7 @@ let Main = class Main {
                 const days = +req.params.days;
                 const result = yield this._sessionsRepo.GetLastTotals(monkeyId, days);
                 // console.log('res', result);
-                res.send(result);
+                res.send(result.map(x => new TotalDto_1.TotalDto(x.Date, x.TotalDuration, x.TotalPullups, x.SessionsCount)));
             }));
             this._host.OnGet('/:monkeyId/total', (req, res) => __awaiter(this, void 0, void 0, function* () {
                 const result = yield this._sessionsRepo.GetMonkeyTotal(req.params.monkeyId);

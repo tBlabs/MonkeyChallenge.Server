@@ -17,7 +17,7 @@ let DateTimeProvider = class DateTimeProvider {
     }
     get TimeAsString() {
         const now = new Date();
-        return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+        return `${now.getHours()}:${now.getMinutes().toFixed(0).padStart(2, "0")}:${now.getSeconds().toFixed(0).padStart(2, "0")}`;
     }
     get DateTimeAsString() {
         const now = new Date();

@@ -26,7 +26,7 @@ export class DateTimeProvider implements IDateTimeProvider
     {
         const now = new Date();
         
-        return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+        return `${now.getHours()}:${now.getMinutes().toFixed(0).padStart(2, "0")}:${now.getSeconds().toFixed(0).padStart(2, "0")}`;
     }
 
     public get DateTimeAsString(): string

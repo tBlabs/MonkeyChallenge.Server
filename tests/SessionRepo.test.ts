@@ -65,6 +65,47 @@ describe(SessionRepository.name, () =>
         expect(result[1].TotalDuration).toBe(3000);
         expect(result[1].TotalPullups).toBe(3);
     });
+    
+    fit('should count daily total for few days', async () => 
+    {
+        // When
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 0, 0, 0), 1000, 1));
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 1, 0, 0), 1000, 1));
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 2, 0, 0), 1000, 1));
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 3, 0, 0), 1000, 1));
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 23, 0, 0), 1000, 1));
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 23, 59, 59), 1000, 1));
+        await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 23, 59, 59, 999), 1000, 1));
+        // WYCHODZĄ POZA ZAKRES:
+        // await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 23, 59, 59, 1000), 1000, 1));
+        // await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 24, 0, 0), 1000, 1));
+        // await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 25, 0, 0), 1000, 1));
+        // await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 26, 0, 0), 1000, 1));
+
+        // await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 23, 59, 58), 1000, 1));
+        // await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 10, 23, 59, 58), 1000, 1));
+        // await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 11, 23, 59, 59), 1000, 1));
+        // await sut.AddSession(new SessionEntity("TestMonkey1", new Date(2000, 0, 12, 1, 0, 0), 1000, 1));
+
+        // Then
+        const result = await sut.GetLastTotals("TestMonkey1", 10);
+
+        console.log(result);
+
+        expect(result.length).toBe(1);
+        // expect(result[0].Date).toEqual(new Date(2000, 0, 10, 2, 0, 0));
+        // expect(result[0].SessionsCount).toBe(2);
+        // expect(result[0].TotalDuration).toBe(2000);
+        // expect(result[0].TotalPullups).toBe(2);
+        // expect(result[1].Date).toEqual(new Date(2000, 0, 11, 2, 0, 0));
+        // expect(result[1].SessionsCount).toBe(1);
+        // expect(result[1].TotalDuration).toBe(1000);
+        // expect(result[1].TotalPullups).toBe(1);
+        // expect(result[2].Date).toEqual(new Date(2000, 0, 12, 2, 0, 0));
+        // expect(result[2].SessionsCount).toBe(1);
+        // expect(result[2].TotalDuration).toBe(1000);
+        // expect(result[2].TotalPullups).toBe(1);
+    });
 
     it('should filter by monkey id', async () =>
     {

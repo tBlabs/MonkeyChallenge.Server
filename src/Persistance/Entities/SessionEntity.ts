@@ -9,3 +9,16 @@ export class SessionEntity
         public Pullups: number)
     { }
 }
+
+class Session
+{
+    public Duration;
+    public Pullups;
+}
+
+class SessionsSum
+{
+    public Duration;
+    public Pullups;
+    public Count;
+}
